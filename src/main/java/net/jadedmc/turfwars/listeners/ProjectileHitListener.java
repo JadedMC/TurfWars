@@ -38,8 +38,9 @@ public class ProjectileHitListener implements Listener {
         while (blockIterator.hasNext()) {
             Block block = blockIterator.next();
 
-            if(block.getType() == Material.WOOL) {
+            if(block.getType() == Material.WOOL && game.getPlacedBlocks().contains(block)) {
                 block.setType(Material.AIR);
+                game.removeBlock(block);
             }
         }
 

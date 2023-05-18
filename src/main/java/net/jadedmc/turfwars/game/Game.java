@@ -245,6 +245,10 @@ public class Game {
         return arena;
     }
 
+    public Collection<Block> getPlacedBlocks() {
+        return placedBlocks;
+    }
+
     public GameState getGameState() {
         return gameState;
     }
