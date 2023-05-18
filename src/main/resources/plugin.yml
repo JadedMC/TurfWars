@@ -1,0 +1,12 @@
+name: TurfWars
+version: '${project.version}'
+main: net.jadedmc.turfwars.TurfWars
+
+commands:
+  admin:
+    description: Admin command
+  arena:
+    description: Arena setup command.
+    usage: /<command>
+  play:
+    description: Play command.
