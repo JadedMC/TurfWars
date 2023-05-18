@@ -6,6 +6,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.turfwars.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
+import net.jadedmc.turfwars.game.kit.Kit;
 import net.jadedmc.turfwars.game.team.Team;
 import net.jadedmc.turfwars.game.team.TeamColor;
 import net.jadedmc.turfwars.utils.LocationUtils;
@@ -218,6 +219,8 @@ public class Game {
         kills.put(player, 0);
         deaths.put(player, 0);
 
+        plugin.getKitManager().addPlayer(player, plugin.getKitManager().getKit("marksman"));
+
         player.getInventory().clear();
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.getInventory().setItem(0, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
@@ -225,7 +228,6 @@ public class Game {
         player.teleport(arena.getWaitingArea());
         sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas joined the game! (&f"+ players.size() + "&a/&f" + 8 + "&a)");
         new GameScoreboard(plugin, player, this).addPlayer(player);
-        plugin.getKitManager().addPlayer(player, plugin.getKitManager().getKit("marksman"));
 
         // Checks if the game is at least 75% full.
         if(players.size() >= 4 && gameCountdown.getSeconds() == 30) {
@@ -378,5 +380,9 @@ public class Game {
 
     public int getDeaths(Player player) {
         return deaths.get(player);
+    }
+
+    public Kit getKit(Player player) {
+        return plugin.getKitManager().getKit(player);
     }
 }

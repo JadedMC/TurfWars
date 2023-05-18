@@ -41,6 +41,10 @@ public abstract class Kit {
         return maxWool;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public int getWoolRegenDelay() {
         return woolRegenDelay;
     }

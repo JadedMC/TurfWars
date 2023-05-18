@@ -30,10 +30,13 @@ public class GameScoreboard extends CustomScoreboard {
         switch (game.getGameState()) {
             case WAITING,COUNTDOWN -> {
                 helper.setTitle("&a&lTURF WARS");
-                helper.setSlot(8, "&7" + DateUtils.currentDateToString());
-                helper.setSlot(7, "");
-                helper.setSlot(6, "&fMap: &a" + game.getArena().getName());
-                helper.setSlot(5, "&fPlayers: &a" + game.getPlayers().size() + "&f/&a" + 8);
+                helper.setSlot(10, "&7" + DateUtils.currentDateToString());
+                helper.setSlot(9, "");
+                helper.setSlot(8, "&fMap: &a" + game.getArena().getName());
+                helper.setSlot(7, "&fPlayers: &a" + game.getPlayers().size() + "&f/&a" + 8);
+                helper.setSlot(6, "");
+
+                helper.setSlot(5, "&fKit: &a" + game.getKit(player).getName());
                 helper.setSlot(4, "");
 
                 if(game.getGameState() == GameState.COUNTDOWN) {
