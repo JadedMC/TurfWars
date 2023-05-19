@@ -49,6 +49,7 @@ public class Game {
 
         gameCountdown.setSeconds(5);
         gameCountdown.start();
+        gameState = GameState.COUNTDOWN;
     }
 
     public void startGame() {
