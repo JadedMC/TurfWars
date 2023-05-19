@@ -42,16 +42,19 @@ public class PlayerInteractListener implements Listener {
                     return;
                 }
 
-                if(game.getGameState() != GameState.BUILD && game.getGameState() != GameState.FIGHT) {
-                    return;
-                }
+                switch (game.getGameState()) {
+                    case WAITING, COUNTDOWN -> {
+                        new KitsGUI(plugin).open(player);
+                    }
+                    case BUILD, FIGHT -> {
+                        if(game.getTeam1().getArenaTeam().isInBounds(player.getLocation()) || game.getTeam2().getArenaTeam().isInBounds(player.getLocation())) {
+                            ChatUtils.chat(player, "<red>You must be in your spawn to change your kit.");
+                            return;
+                        }
 
-                if(game.getTeam1().getArenaTeam().isInBounds(player.getLocation()) || game.getTeam2().getArenaTeam().isInBounds(player.getLocation())) {
-                    ChatUtils.chat(player, "<red>You must be in your spawn to change your kit.");
-                    return;
+                        new KitsGUI(plugin).open(player);
+                    }
                 }
-
-                new KitsGUI(plugin).open(player);
             }
         }
     }
