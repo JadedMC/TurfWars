@@ -2,7 +2,6 @@ package net.jadedmc.turfwars.game;
 
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
-import net.jadedmc.turfwars.game.team.Team;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -11,7 +10,6 @@ import java.util.*;
  * Manages all active games.
  */
 public class GameManager {
-    private final TurfWars plugin;
     private final Collection<Game> games = new HashSet<>();
 
     /**
@@ -19,14 +17,22 @@ public class GameManager {
      * @param plugin Instance of the plugin.
      */
     public GameManager(TurfWars plugin) {
-        this.plugin = plugin;
-
         for(Arena arena : plugin.getArenaManager().getArenas()) {
             games.add(new Game(plugin, arena));
         }
     }
 
+    /**
+     * Finds a game for a player to join and adds them to it.
+     * @param player Player to add to the game.
+     */
     public void addToGame(Player player) {
+        // Remove the player from their previous game if they are in one.
+        Game previous = getGame(player);
+        if(previous != null) {
+            previous.removePlayer(player);
+        }
+
         List<Game> possibleGames = new ArrayList<>();
 
         for(Game game : games) {
@@ -79,9 +85,5 @@ public class GameManager {
         }
 
         return null;
-    }
-
-    public Collection<Game> getGames() {
-        return games;
     }
 }
