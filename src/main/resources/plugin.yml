@@ -1,6 +1,7 @@
 name: TurfWars
 version: '${project.version}'
 main: net.jadedmc.turfwars.TurfWars
+depend: [JadedChat, PlaceholderAPI]
 
 commands:
   admin:
