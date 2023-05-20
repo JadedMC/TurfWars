@@ -3,6 +3,7 @@ package net.jadedmc.turfwars.game;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.jadedmc.jadedchat.JadedChat;
 import net.jadedmc.turfwars.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
@@ -71,6 +72,7 @@ public class Game {
 
         for(Player player : players) {
             plugin.getKitManager().getKit(player).applyKit(player, this);
+            JadedChat.setChannel(player, JadedChat.getChannel("GAME"));
         }
 
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
@@ -191,6 +193,7 @@ public class Game {
                 plugin.getKitManager().removePlayer(player);
                 new LobbyScoreboard(plugin, player).addPlayer(player);
                 player.teleport(LocationUtils.getSpawn(plugin));
+                JadedChat.setChannel(player, JadedChat.getDefaultChannel());
             }
 
             players.clear();

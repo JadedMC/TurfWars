@@ -1,5 +1,9 @@
 package net.jadedmc.turfwars;
 
+import net.jadedmc.jadedchat.JadedChat;
+import net.jadedmc.jadedchat.features.channels.channel.ChatChannel;
+import net.jadedmc.jadedchat.features.channels.channel.ChatChannelBuilder;
+import net.jadedmc.jadedchat.features.channels.fomat.ChatFormatBuilder;
 import net.jadedmc.turfwars.commands.AdminCMD;
 import net.jadedmc.turfwars.commands.ArenaCMD;
 import net.jadedmc.turfwars.commands.PlayCMD;
@@ -37,6 +41,8 @@ public final class TurfWars extends JavaPlugin {
         getCommand("arena").setExecutor(new ArenaCMD(this));
         getCommand("play").setExecutor(new PlayCMD(this));
 
+        getServer().getPluginManager().registerEvents(new ChannelMessageSendListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChannelSwitchListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityDamageListener(), this);
@@ -54,6 +60,22 @@ public final class TurfWars extends JavaPlugin {
         new ScoreboardUpdate(this).runTaskTimer(this, 20L, 20L);
 
         new Placeholders(this).register();
+
+        // Generate game channel.
+        if(!JadedChat.channelExists("GAME")) {
+            ChatChannel gameChannel = new ChatChannelBuilder("GAME")
+                    .setDisplayName("<green>GAME</green>")
+                    .addChatFormat(new ChatFormatBuilder("default")
+                            .addSection("team", "%tw_team_prefix% ")
+                            .addSection("prefix", "%luckperms_prefix%")
+                            .addSection("player", "<gray>%player_name%")
+                            .addSection("seperator", "<dark_gray> » ")
+                            .addSection("message", "<gray><message>")
+                            .build())
+                    .build();
+            gameChannel.saveToFile("game.yml");
+            JadedChat.loadChannel(gameChannel);
+        }
     }
 
     @Override

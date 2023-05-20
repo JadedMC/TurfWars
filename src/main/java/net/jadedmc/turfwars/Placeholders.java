@@ -5,6 +5,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
 import net.jadedmc.turfwars.game.team.Team;
+import net.jadedmc.turfwars.utils.chat.ChatUtils;
 import org.bukkit.entity.Player;
 
 /**
@@ -139,6 +140,11 @@ class Placeholders extends PlaceholderExpansion {
                 }
 
                 return "spec";
+            }
+
+            case "team_prefix" -> {
+                Team team = game.getTeam(player);
+                return ChatUtils.replaceChatColor(team.getTeamColor().chatColor()) + "[" + team.getTeamColor().getName().toUpperCase() + "] ";
             }
         }
 

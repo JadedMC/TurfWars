@@ -98,5 +98,12 @@
             <version>2.11.3</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.jadedmc</groupId>
+            <artifactId>JadedChat</artifactId>
+            <version>0.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/JadedChat-0.4b16.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
