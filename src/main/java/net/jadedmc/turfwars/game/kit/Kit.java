@@ -58,21 +58,23 @@ public abstract class Kit {
 
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(game == null || game.getGameState() == GameState.END) {
+                arrowRegen.remove(player);
                 return;
             }
 
             if(player.getInventory().contains(Material.ARROW, maxArrows)) {
+                arrowRegen.remove(player);
                 return;
             }
 
             if(player.getInventory().first(Material.ARROW) < 0) {
                 player.getInventory().setItem(8, new ItemStack(Material.ARROW));
-                return;
+            }
+            else {
+                player.getInventory().addItem(new ItemStack(Material.ARROW));
             }
 
             arrowRegen.remove(player);
-
-            player.getInventory().addItem(new ItemStack(Material.ARROW));
 
             if(!player.getInventory().contains(Material.ARROW, maxArrows)) {
                 regenArrow(player, game);
@@ -89,10 +91,12 @@ public abstract class Kit {
 
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(game == null || game.getGameState() == GameState.END) {
+                woolRegen.remove(player);
                 return;
             }
 
             if(player.getInventory().contains(Material.WOOL, maxWool)) {
+                woolRegen.remove(player);
                 return;
             }
 
