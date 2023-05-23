@@ -44,6 +44,10 @@ public class PlayerMoveListener implements Listener {
             return;
         }
 
+        if(game.getSpectators().contains(player)) {
+            return;
+        }
+
         Team opposing = game.getOpposingTeam(event.getPlayer());
 
         if((plugin.getKitManager().getKit(player) instanceof InfiltratorKit) && game.getGameState() == GameState.FIGHT) {

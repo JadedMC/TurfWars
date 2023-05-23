@@ -11,3 +11,6 @@ commands:
     usage: /<command>
   play:
     description: Play command.
+  spectate:
+    description: Spectate a game.
+    aliases: [spec]

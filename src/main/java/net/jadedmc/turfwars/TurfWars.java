@@ -7,6 +7,7 @@ import net.jadedmc.jadedchat.features.channels.fomat.ChatFormatBuilder;
 import net.jadedmc.turfwars.commands.AdminCMD;
 import net.jadedmc.turfwars.commands.ArenaCMD;
 import net.jadedmc.turfwars.commands.PlayCMD;
+import net.jadedmc.turfwars.commands.SpectateCMD;
 import net.jadedmc.turfwars.game.GameManager;
 import net.jadedmc.turfwars.game.arena.ArenaManager;
 import net.jadedmc.turfwars.game.kit.KitManager;
@@ -40,6 +41,7 @@ public final class TurfWars extends JavaPlugin {
         getCommand("admin").setExecutor(new AdminCMD(this));
         getCommand("arena").setExecutor(new ArenaCMD(this));
         getCommand("play").setExecutor(new PlayCMD(this));
+        getCommand("spectate").setExecutor(new SpectateCMD(this));
 
         getServer().getPluginManager().registerEvents(new ChannelMessageSendListener(this), this);
         getServer().getPluginManager().registerEvents(new ChannelSwitchListener(this), this);

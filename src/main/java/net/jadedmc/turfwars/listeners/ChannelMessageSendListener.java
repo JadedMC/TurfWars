@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChannelMessageSendListener implements Listener {
     private final TurfWars plugin;
 
@@ -28,6 +31,9 @@ public class ChannelMessageSendListener implements Listener {
             return;
         }
 
-        event.setViewers(game.getPlayers());
+        List<Player> viewers = new ArrayList<>(game.getPlayers());
+        viewers.addAll(game.getSpectators());
+
+        event.setViewers(viewers);
     }
 }

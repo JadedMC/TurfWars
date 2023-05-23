@@ -28,6 +28,11 @@ public class BlockBreakListener implements Listener {
             return;
         }
 
+        if(game.getSpectators().contains(player)) {
+            event.setCancelled(true);
+            return;
+        }
+
         if(game.getGameState() == GameState.BUILD || game.getGameState() == GameState.FIGHT) {
             Team team = game.getTeam(player);
 

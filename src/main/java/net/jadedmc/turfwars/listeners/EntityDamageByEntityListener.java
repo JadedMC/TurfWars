@@ -69,6 +69,11 @@ public class EntityDamageByEntityListener implements Listener {
             return;
         }
 
+        if(game.getSpectators().contains(player) || game.getSpectators().contains(killer)) {
+            event.setCancelled(true);
+            return;
+        }
+
         if(game.getGameState() != GameState.FIGHT) {
             event.setCancelled(true);
             return;

@@ -82,8 +82,28 @@ public class GameManager {
             if(game.getPlayers().contains(player)) {
                 return game;
             }
+
+            if(game.getSpectators().contains(player)) {
+                return game;
+            }
         }
 
         return null;
+    }
+
+    public Collection<Game> getGames() {
+        return games;
+    }
+
+    public List<Game> getActiveGames() {
+        List<Game> activeGames = new ArrayList<>();
+
+        for(Game game : getGames()) {
+            if(game.getGameState() == GameState.BUILD || game.getGameState() == GameState.FIGHT) {
+               activeGames.add(game);
+            }
+        }
+
+        return activeGames;
     }
 }

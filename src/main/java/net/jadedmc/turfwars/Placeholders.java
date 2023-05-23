@@ -104,6 +104,10 @@ class Placeholders extends PlaceholderExpansion {
                 return "%luckperms_prefix%&7" + player.getName();
             }
 
+            if(game.getSpectators().contains(player)) {
+                return "<gray>[SPEC] " + player.getName();
+            }
+
             Team team = game.getTeam(player);
             return team.getTeamColor().chatColor() + player.getName() + " &8[" + game.getKills(player) + "-" + game.getDeaths(player) + "]";
         }
@@ -131,6 +135,10 @@ class Placeholders extends PlaceholderExpansion {
             case "game_team" -> {
                 Team team = game.getTeam(player);
 
+                if(team == null) {
+                    return "team3";
+                }
+
                 if(team.equals(game.getTeam1())) {
                     return "team1";
                 }
@@ -139,12 +147,17 @@ class Placeholders extends PlaceholderExpansion {
                     return "team2";
                 }
 
-                return "spec";
+                return "team3";
             }
 
             case "team_prefix" -> {
+
+                if(game.getSpectators().contains(player)) {
+                    return "<gray>[SPEC]";
+                }
+
                 Team team = game.getTeam(player);
-                return ChatUtils.replaceChatColor(team.getTeamColor().chatColor()) + "[" + team.getTeamColor().getName().toUpperCase() + "] ";
+                return ChatUtils.replaceChatColor(team.getTeamColor().chatColor()) + "[" + team.getTeamColor().getName().toUpperCase() + "]";
             }
         }
 
