@@ -77,6 +77,7 @@ public class Game {
         for(Player player : players) {
             plugin.getKitManager().getKit(player).applyKit(player, this);
             JadedChat.setChannel(player, JadedChat.getChannel("GAME"));
+            player.setGameMode(GameMode.SURVIVAL);
         }
 
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
@@ -198,6 +199,7 @@ public class Game {
                 new LobbyScoreboard(plugin, player).addPlayer(player);
                 player.teleport(LocationUtils.getSpawn(plugin));
                 JadedChat.setChannel(player, JadedChat.getDefaultChannel());
+                player.setGameMode(GameMode.ADVENTURE);
             }
 
             getSpectators().forEach(this::removeSpectator);
