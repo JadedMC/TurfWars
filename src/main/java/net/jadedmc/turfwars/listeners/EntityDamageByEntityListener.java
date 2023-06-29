@@ -66,6 +66,7 @@ public class EntityDamageByEntityListener implements Listener {
         Game game = plugin.getGameManager().getGame(player);
 
         if(game == null) {
+            event.setCancelled(true);
             return;
         }
 
