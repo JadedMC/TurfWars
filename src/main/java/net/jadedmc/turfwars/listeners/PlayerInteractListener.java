@@ -4,6 +4,8 @@ import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
 import net.jadedmc.turfwars.game.kit.KitsGUI;
+import net.jadedmc.turfwars.utils.ItemUtils;
+import net.jadedmc.turfwars.utils.LocationUtils;
 import net.jadedmc.turfwars.utils.chat.ChatUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -55,6 +57,18 @@ public class PlayerInteractListener implements Listener {
                         new KitsGUI(plugin).open(player);
                     }
                 }
+            }
+
+            case "Leave" -> {
+                Game game = plugin.getGameManager().getGame(player);
+
+                if (game == null) {
+                    return;
+                }
+
+                game.removePlayer(player);
+                player.teleport(LocationUtils.getSpawn(plugin));
+                ItemUtils.giveLobbyItems(player);
             }
         }
     }

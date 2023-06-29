@@ -236,6 +236,7 @@ public class Game {
         player.getInventory().clear();
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.getInventory().setItem(0, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
+        player.getInventory().setItem(8, new ItemBuilder(Material.BED).setDisplayName("&c&lLeave").build());
 
         player.teleport(arena.getWaitingArea());
         sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas joined the game! (&f"+ players.size() + "&a/&f" + 8 + "&a)");
