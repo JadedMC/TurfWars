@@ -5,6 +5,7 @@ import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
 import net.jadedmc.turfwars.game.team.Team;
 import net.jadedmc.turfwars.utils.chat.ChatUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -27,6 +28,10 @@ public class BlockPlaceListener implements Listener {
         Game game = plugin.getGameManager().getGame(player);
 
         if(game == null) {
+            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                event.setCancelled(true);
+            }
+
             return;
         }
 

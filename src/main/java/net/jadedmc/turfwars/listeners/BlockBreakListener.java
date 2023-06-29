@@ -5,6 +5,7 @@ import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
 import net.jadedmc.turfwars.game.team.Team;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +26,10 @@ public class BlockBreakListener implements Listener {
         Game game = plugin.getGameManager().getGame(player);
 
         if(game == null) {
+            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                event.setCancelled(true);
+            }
+
             return;
         }
 
