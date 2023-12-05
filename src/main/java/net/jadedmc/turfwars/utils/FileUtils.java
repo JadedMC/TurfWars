@@ -42,7 +42,7 @@ public class FileUtils {
                     if(!target.exists())
                         if (!target.mkdirs())
                             throw new IOException("Couldn't create world directory!");
-                    String files[] = source.list();
+                    String[] files = source.list();
                     for (String file : files) {
                         File srcFile = new File(source, file);
                         File destFile = new File(target, file);
@@ -73,17 +73,12 @@ public class FileUtils {
      * @return Whether it was deleted succesfully or not.
      */
     public static boolean deleteDirectory(File path) {
-        System.out.println("Deleting " + path);
         if(path.exists()) {
-            File files[] = path.listFiles();
-            for(int i=0; i < files.length; i++) {
-                if(files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                }
-                else {
-                    boolean canWrite = files[i].canWrite();
-                    boolean deleted = files[i].delete();
-                    System.out.println("Deleted: " + deleted + ". Can Write: " + canWrite);
+            File[] files = path.listFiles();
+            assert files != null;
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
                 }
             }
         }
