@@ -137,7 +137,7 @@ public class ArenaCMD implements CommandExecutor {
         // Sets world settings.
         world.setTime(6000);
         world.getWorldBorder().setCenter(world.getSpawnLocation());
-        world.getWorldBorder().setSize(300);
+        world.getWorldBorder().setSize(512);
         world.setKeepSpawnInMemory(false);
 
         player.setGameMode(GameMode.CREATIVE);
