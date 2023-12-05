@@ -47,6 +47,11 @@ public class Game {
         this.gameCountdown = new GameCountdown(plugin, this);
         round = 0;
         roundCountdown = new RoundCountdown(plugin);
+
+        // Set world game rules.
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            world.setGameRuleValue("doDaylightCycle", "false");
+        });
     }
 
     public void forceStartGame(Player player) {
