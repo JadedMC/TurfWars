@@ -1,6 +1,6 @@
 package net.jadedmc.turfwars.listeners;
 
-import net.jadedmc.turfwars.LobbyScoreboard;
+import net.jadedmc.turfwars.game.lobby.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.utils.LocationUtils;
 import org.bukkit.entity.Player;

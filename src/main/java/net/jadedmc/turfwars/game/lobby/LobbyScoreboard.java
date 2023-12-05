@@ -1,5 +1,6 @@
-package net.jadedmc.turfwars;
+package net.jadedmc.turfwars.game.lobby;
 
+import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.utils.DateUtils;
 import net.jadedmc.turfwars.utils.scoreboard.CustomScoreboard;
 import net.jadedmc.turfwars.utils.scoreboard.ScoreHelper;

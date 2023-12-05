@@ -3,7 +3,7 @@ package net.jadedmc.turfwars.game;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.jadedchat.JadedChat;
-import net.jadedmc.turfwars.LobbyScoreboard;
+import net.jadedmc.turfwars.game.lobby.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
 import net.jadedmc.turfwars.game.kit.Kit;
