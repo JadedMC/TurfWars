@@ -71,6 +71,6 @@ public class ArenaChunkGenerator extends ChunkGenerator {
      */
     @Override
     public Location getFixedSpawnLocation(@NotNull World world, @NotNull Random random) {
-        return new Location(world, 0, 66, 0);
+        return new Location(world, 256, 66, 256);
     }
 }
