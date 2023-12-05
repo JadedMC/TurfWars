@@ -20,7 +20,7 @@ public class SpectateGUI extends CustomGUI {
 
 
             ItemBuilder item = new ItemBuilder(Material.BOW)
-                    .setDisplayName("&a" + game.getArena().getName())
+                    .setDisplayName("&a" + game.getArena().name())
                     .addFlag(ItemFlag.HIDE_ATTRIBUTES);
 
             for(Player p : game.getPlayers()) {

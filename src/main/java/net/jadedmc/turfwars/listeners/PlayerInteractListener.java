@@ -49,7 +49,7 @@ public class PlayerInteractListener implements Listener {
                         new KitsGUI(plugin).open(player);
                     }
                     case BUILD, FIGHT -> {
-                        if(game.getTeam1().getArenaTeam().isInBounds(player.getLocation()) || game.getTeam2().getArenaTeam().isInBounds(player.getLocation())) {
+                        if(game.getTeam1().isInBounds(player.getLocation()) || game.getTeam2().isInBounds(player.getLocation())) {
                             ChatUtils.chat(player, "<red>You must be in your spawn to change your kit.");
                             return;
                         }

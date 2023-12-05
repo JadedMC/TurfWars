@@ -55,7 +55,7 @@ public class PlayerMoveListener implements Listener {
             return;
         }
 
-        if(opposing.getArenaTeam().isInBounds(event.getPlayer().getLocation())) {
+        if(opposing.isInBounds(event.getPlayer().getLocation())) {
 
             exempt.add(event.getPlayer().getUniqueId());
 
@@ -64,7 +64,7 @@ public class PlayerMoveListener implements Listener {
 
             Team team = game.getTeam(player);
 
-            Vector vector = MathUtils.getTrajectory2d(player.getLocation(), team.getArenaTeam().getRandomSpawn());
+            Vector vector = MathUtils.getTrajectory2d(player.getLocation(), team.getArenaTeam().randomSpawn(game.world()));
             vector.normalize();
             vector.multiply(2);
             vector.setY(vector.getY() + 0.8);

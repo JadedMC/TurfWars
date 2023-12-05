@@ -35,6 +35,7 @@ public final class TurfWars extends JavaPlugin {
 
         settingsManager = new SettingsManager(this);
         arenaManager = new ArenaManager(this);
+        arenaManager.loadArenas();
         gameManager = new GameManager(this);
         kitManager = new KitManager(this);
 
@@ -99,7 +100,7 @@ public final class TurfWars extends JavaPlugin {
      * Retrieves the object managing arenas.
      * @return Arena Manager.
      */
-    public ArenaManager getArenaManager() {
+    public ArenaManager arenaManager() {
         return arenaManager;
     }
 

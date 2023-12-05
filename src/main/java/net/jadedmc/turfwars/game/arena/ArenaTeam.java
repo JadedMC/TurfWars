@@ -1,9 +1,33 @@
+/*
+ * This file is part of TurfWars, licensed under the MIT License.
+ *
+ *  Copyright (c) JadedMC
+ *  Copyright (c) contributors
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 package net.jadedmc.turfwars.game.arena;
 
-import com.cryptomorin.xseries.XBlock;
 import net.jadedmc.turfwars.utils.LocationUtils;
 import net.jadedmc.turfwars.utils.blocks.BlockUtils;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -12,7 +36,6 @@ import java.util.*;
 public class ArenaTeam {
     private final List<Location> spawns = new ArrayList<>();
     private final ConfigurationSection config;
-
     private Block bounds1;
     private Block bounds2;
 
@@ -31,44 +54,33 @@ public class ArenaTeam {
         }
     }
 
-    public Block getBounds1() {
-        return bounds1;
+    public Block bounds1(World world) {
+        return world.getBlockAt(LocationUtils.replaceWorld(world, bounds1.getLocation()));
     }
 
-    public Block getBounds2() {
-        return bounds2;
+    public Block bounds2(World world) {
+        return world.getBlockAt(LocationUtils.replaceWorld(world, bounds2.getLocation()));
     }
 
-    public List<Location> getSpawns() {
-        return spawns;
+    public Location randomSpawn(World world) {
+        List<Location> worldSpawns = new ArrayList<>();
+
+        for(Location spawn : spawns) {
+            worldSpawns.add(LocationUtils.replaceWorld(world, spawn));
+        }
+
+        Collections.shuffle(worldSpawns);
+
+        return worldSpawns.get(0);
     }
 
-    public boolean isInBounds(Location location) {
-        int minX = Math.min(bounds1.getX(), bounds2.getX());
-        int maxX = Math.max(bounds1.getX(), bounds2.getX());
-        int minZ = Math.min(bounds1.getZ(), bounds2.getZ());
-        int maxZ = Math.max(bounds1.getZ(), bounds2.getZ());
+    public List<Location> spawns(World world) {
+        List<Location> worldSpawns = new ArrayList<>();
 
-        return (location.getBlockX() >= minX && location.getBlockX() <= maxX && location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ);
-    }
+        for(Location spawn : spawns) {
+            worldSpawns.add(LocationUtils.replaceWorld(world, spawn));
+        }
 
-    public void resetBounds() {
-        bounds1 = BlockUtils.fromConfig(config.getConfigurationSection("bounds1"));
-        bounds2 = BlockUtils.fromConfig(config.getConfigurationSection("bounds2"));
-    }
-
-    public void setBounds1(Block bounds1) {
-        this.bounds1 = bounds1;
-    }
-
-    public void setBounds2(Block bounds2) {
-        this.bounds2 = bounds2;
-    }
-
-    public Location getRandomSpawn() {
-        List<Location> spawns = new ArrayList<>(getSpawns());
-        Collections.shuffle(spawns);
-
-        return spawns.get(0);
+        return worldSpawns;
     }
 }

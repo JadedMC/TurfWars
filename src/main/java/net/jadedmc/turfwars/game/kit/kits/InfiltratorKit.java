@@ -52,13 +52,13 @@ public class InfiltratorKit extends Kit {
         Team team = game.getTeam(player);
 
         // If the player is in their own turf, remove the slowness effect.
-        if(team.getArenaTeam().isInBounds(player.getLocation())) {
+        if(team.isInBounds(player.getLocation())) {
             slownessCooldown.remove(player);
             player.removePotionEffect(PotionEffectType.SLOW);
             return;
         }
 
-        if(!game.getOpposingTeam(player).getArenaTeam().isInBounds(player.getLocation())) {
+        if(!game.getOpposingTeam(player).isInBounds(player.getLocation())) {
             return;
         }
 

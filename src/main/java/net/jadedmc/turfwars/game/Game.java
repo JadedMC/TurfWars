@@ -1,6 +1,5 @@
 package net.jadedmc.turfwars.game;
 
-import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.jadedchat.JadedChat;
@@ -16,6 +15,7 @@ import net.jadedmc.turfwars.utils.items.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,10 +36,12 @@ public class Game {
     private final Map<Player, Integer> kills = new HashMap<>();
     private final Map<Player, Integer> deaths = new HashMap<>();
     private final Set<Player> spectators = new HashSet<>();
+    private final World world;
 
-    public Game(TurfWars plugin, Arena arena) {
+    public Game(final TurfWars plugin, final Arena arena, final World world) {
         this.plugin = plugin;
         this.arena = arena;
+        this.world = world;
 
         this.gameState = GameState.WAITING;
         this.gameCountdown = new GameCountdown(plugin, this);
@@ -59,11 +61,8 @@ public class Game {
 
     public void startGame() {
         // Create the two teams.
-        team1 = new Team(arena.getTeam1(), TeamColor.RED);
-        team2 = new Team(arena.getTeam2(), TeamColor.AQUA);
-
-        team1.updateBlocks();
-        team2.updateBlocks();
+        team1 = new Team(arena.team1(), TeamColor.RED, world);
+        team2 = new Team(arena.team2(), TeamColor.AQUA, world);
 
         // Randomize players and add them to teams.
         Collections.shuffle(players);
@@ -87,7 +86,7 @@ public class Game {
         sendMessage("<white>Each <red>kill <white>advances your turf forwards.");
         sendMessage("<white>Take over <yellow>All The Turf <white>to win!");
         sendMessage("");
-        sendMessage("<green>Map - <white>" + arena.getName() + " <dark_gray>by <white>" + arena.getAuthor());
+        sendMessage("<green>Map - <white>" + arena.name() + " <dark_gray>by <white>" + arena.builders());
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
         startBuild();
@@ -182,10 +181,6 @@ public class Game {
             round = 0;
             gameCountdown = new GameCountdown(plugin, this);
 
-            arena.reset();
-            team1.updateBlocks();
-            team2.updateBlocks();
-
             for(Block block : placedBlocks) {
                 block.setType(Material.AIR);
             }
@@ -208,7 +203,7 @@ public class Game {
             kills.clear();
             deaths.clear();
 
-            gameState = GameState.WAITING;
+            plugin.getGameManager().deleteGame(this);
         }, 5*20);
     }
 
@@ -238,7 +233,7 @@ public class Game {
         player.getInventory().setItem(0, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
         player.getInventory().setItem(8, new ItemBuilder(Material.BED).setDisplayName("&c&lLeave").build());
 
-        player.teleport(arena.getWaitingArea());
+        player.teleport(arena.waitingArea(world));
         sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas joined the game! (&f"+ players.size() + "&a/&f" + 8 + "&a)");
         new GameScoreboard(plugin, player, this).addPlayer(player);
 
@@ -263,7 +258,7 @@ public class Game {
     public void addSpectator(Player player) {
         spectators.add(player);
 
-        player.teleport(arena.getTeam1().getRandomSpawn());
+        player.teleport(arena.spectatorSpawn(world));
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.setAllowFlight(true);
@@ -442,6 +437,12 @@ public class Game {
                 gameCountdown = new GameCountdown(plugin, this);
                 gameState = GameState.WAITING;
             }
+
+            // If the game is empty, delete it.
+            if(players.size() == 0) {
+                System.out.println("0 Players detected");
+                plugin.getGameManager().deleteGame(this);
+            }
         }
         else {
             getTeam(player).removePlayer(player);
@@ -490,5 +491,9 @@ public class Game {
 
     public Kit getKit(Player player) {
         return plugin.getKitManager().getKit(player);
+    }
+
+    public World world() {
+        return world;
     }
 }

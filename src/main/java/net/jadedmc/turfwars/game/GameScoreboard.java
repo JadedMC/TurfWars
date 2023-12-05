@@ -32,7 +32,7 @@ public class GameScoreboard extends CustomScoreboard {
                 helper.setTitle("&a&lTURF WARS");
                 helper.setSlot(10, "&7" + DateUtils.currentDateToString());
                 helper.setSlot(9, "");
-                helper.setSlot(8, "&fMap: &a" + game.getArena().getName());
+                helper.setSlot(8, "&fMap: &a" + game.getArena().name());
                 helper.setSlot(7, "&fPlayers: &a" + game.getPlayers().size() + "&f/&a" + 8);
                 helper.setSlot(6, "");
 
