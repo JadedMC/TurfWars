@@ -89,7 +89,7 @@ public class ArenaBuilder {
             // Save waiting area.
             {
                 ConfigurationSection waitingAreaSection = arenaSection.createSection("waitingArea");
-                waitingAreaSection.set("World", waitingArea.getWorld().getName());
+                waitingAreaSection.set("World", Bukkit.getWorlds().get(0).getName());
                 waitingAreaSection.set("X", waitingArea.getX());
                 waitingAreaSection.set("Y", waitingArea.getY());
                 waitingAreaSection.set("Z", waitingArea.getZ());
@@ -114,13 +114,13 @@ public class ArenaBuilder {
                 ConfigurationSection team = arenaSection.createSection("teams.1");
 
                 ConfigurationSection bounds1 = team.createSection("bounds1");
-                bounds1.set("World", waitingArea.getWorld().getName());
+                bounds1.set("World", Bukkit.getWorlds().get(0).getName());
                 bounds1.set("X", team1Bounds1.getX());
                 bounds1.set("Y", team1Bounds1.getY());
                 bounds1.set("Z", team1Bounds1.getZ());
 
                 ConfigurationSection bounds2 = team.createSection("bounds2");
-                bounds2.set("World", waitingArea.getWorld().getName());
+                bounds2.set("World", Bukkit.getWorlds().get(0).getName());
                 bounds2.set("X", team1Bounds2.getX());
                 bounds2.set("Y", team1Bounds2.getY());
                 bounds2.set("Z", team1Bounds2.getZ());
@@ -129,7 +129,7 @@ public class ArenaBuilder {
                 int count = 1;
                 for(Location location : team1Spawns) {
                     ConfigurationSection spawn = spawns.createSection(count + "");
-                    spawn.set("World", waitingArea.getWorld().getName());
+                    spawn.set("World", Bukkit.getWorlds().get(0).getName());
                     spawn.set("X", location.getX());
                     spawn.set("Y", location.getY());
                     spawn.set("Z", location.getZ());
@@ -145,13 +145,13 @@ public class ArenaBuilder {
                 ConfigurationSection team = arenaSection.createSection("teams.2");
 
                 ConfigurationSection bounds1 = team.createSection("bounds1");
-                bounds1.set("World", waitingArea.getWorld().getName());
+                bounds1.set("World", Bukkit.getWorlds().get(0).getName());
                 bounds1.set("X", team2Bounds1.getX());
                 bounds1.set("Y", team2Bounds1.getY());
                 bounds1.set("Z", team2Bounds1.getZ());
 
                 ConfigurationSection bounds2 = team.createSection("bounds2");
-                bounds2.set("World", waitingArea.getWorld().getName());
+                bounds2.set("World", Bukkit.getWorlds().get(0).getName());
                 bounds2.set("X", team2Bounds2.getX());
                 bounds2.set("Y", team2Bounds2.getY());
                 bounds2.set("Z", team2Bounds2.getZ());
@@ -160,7 +160,7 @@ public class ArenaBuilder {
                 int count = 1;
                 for(Location location : team2Spawns) {
                     ConfigurationSection spawn = spawns.createSection(count + "");
-                    spawn.set("World", waitingArea.getWorld().getName());
+                    spawn.set("World", Bukkit.getWorlds().get(0).getName());
                     spawn.set("X", location.getX());
                     spawn.set("Y", location.getY());
                     spawn.set("Z", location.getZ());
