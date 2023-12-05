@@ -29,7 +29,7 @@ public class GameScoreboard extends CustomScoreboard {
 
         switch (game.getGameState()) {
             case WAITING,COUNTDOWN -> {
-                helper.setTitle("&a&lTURF WARS");
+                helper.setTitle("&a&lTurf Wars");
                 helper.setSlot(10, "&7" + DateUtils.currentDateToString());
                 helper.setSlot(9, "");
                 helper.setSlot(8, "&fMap: &a" + game.getArena().name());
@@ -47,11 +47,11 @@ public class GameScoreboard extends CustomScoreboard {
                 }
 
                 helper.setSlot(2, "");
-                helper.setSlot(1, "&ajadedmc.net");
+                helper.setSlot(1, "&aplay.jadedmc.net");
             }
 
             case BUILD -> {
-                helper.setTitle("&a&lTURF WARS");
+                helper.setTitle("&a&lTurf Wars");
                 helper.setSlot(15, "&7" + DateUtils.currentDateToString());
                 helper.setSlot(14, "");
                 helper.setSlot(13, "&f" + game.getTeam1().getLines() + " " + game.getTeam1().getTeamColor().chatColor() + game.getTeam1().getTeamColor().getName());
@@ -67,11 +67,11 @@ public class GameScoreboard extends CustomScoreboard {
                 helper.removeSlot(3);
                 helper.removeSlot(2);
                 helper.removeSlot(2);
-                helper.setSlot(1, "&ajadedmc.net");
+                helper.setSlot(1, "&aplay.jadedmc.net");
             }
 
             case FIGHT -> {
-                helper.setTitle("&a&lTURF WARS");
+                helper.setTitle("&a&lTurf Wars");
                 helper.setSlot(15, "&7" + DateUtils.currentDateToString());
                 helper.setSlot(14, "");
                 helper.setSlot(13, "&f" + game.getTeam1().getLines() + " " + game.getTeam1().getTeamColor().chatColor() + game.getTeam1().getTeamColor().getName());
@@ -87,11 +87,11 @@ public class GameScoreboard extends CustomScoreboard {
                 helper.removeSlot(3);
                 helper.removeSlot(2);
                 helper.removeSlot(2);
-                helper.setSlot(1, "&ajadedmc.net");
+                helper.setSlot(1, "&aplay.jadedmc.net");
             }
 
             case END -> {
-                helper.setTitle("&a&lTURF WARS");
+                helper.setTitle("&a&lTurf Wars");
                 helper.setSlot(15, "&7" + DateUtils.currentDateToString());
                 helper.setSlot(14, "");
                 helper.setSlot(13, "&f" + game.getTeam1().getLines() + " " + game.getTeam1().getTeamColor().chatColor() + game.getTeam1().getTeamColor().getName());
@@ -107,13 +107,13 @@ public class GameScoreboard extends CustomScoreboard {
                 helper.removeSlot(3);
                 helper.removeSlot(2);
                 helper.removeSlot(2);
-                helper.setSlot(1, "&ajadedmc.net");
+                helper.setSlot(1, "&aplay.jadedmc.net");
             }
 
             default -> {
-                helper.setTitle("&a&lTURF WARS");
+                helper.setTitle("&a&lTurf Wars");
                 helper.setSlot(2, "");
-                helper.setSlot(1, "&ajadedmc.net");
+                helper.setSlot(1, "&aplay.jadedmc.net");
             }
         }
     }

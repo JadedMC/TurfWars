@@ -47,6 +47,6 @@ public class LobbyScoreboard extends CustomScoreboard {
         helper.setSlot(4, "&aCoins: " + "&60");
         helper.setSlot(3, "&aWins: &f0");
         helper.setSlot(2, "");
-        helper.setSlot(1, "&aokay.jadedmc.net");
+        helper.setSlot(1, "&aplay.jadedmc.net");
     }
 }
