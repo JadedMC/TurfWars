@@ -181,7 +181,16 @@ public class Game {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(gameState == GameState.FIGHT) {
                 roundCountdown.stop();
-                startBuild();
+
+                if(round > 8 && (team1.getLines() > team2.getLines())) {
+                    endGame(team1);
+                }
+                else if(round > 8 && (team2.getLines() > team1.getLines())) {
+                    endGame(team2);
+                }
+                else {
+                    startBuild();
+                }
             }
         }, length*20);
     }
