@@ -1,3 +1,27 @@
+/*
+ * This file is part of TurfWars, licensed under the MIT License.
+ *
+ *  Copyright (c) JadedMC
+ *  Copyright (c) contributors
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 package net.jadedmc.turfwars.game;
 
 import com.google.common.collect.Lists;
@@ -7,6 +31,7 @@ import net.jadedmc.turfwars.game.lobby.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
 import net.jadedmc.turfwars.game.kit.Kit;
+import net.jadedmc.turfwars.game.lobby.LobbyUtils;
 import net.jadedmc.turfwars.game.team.Team;
 import net.jadedmc.turfwars.game.team.TeamColor;
 import net.jadedmc.turfwars.utils.LocationUtils;
@@ -181,13 +206,7 @@ public class Game {
             team1.getPlayers().clear();
             team2.getPlayers().clear();
 
-            for(Player player : players) {
-                plugin.getKitManager().removePlayer(player);
-                new LobbyScoreboard(plugin, player).addPlayer(player);
-                player.teleport(LocationUtils.getSpawn(plugin));
-                JadedChat.setChannel(player, JadedChat.getDefaultChannel());
-                player.setGameMode(GameMode.ADVENTURE);
-            }
+            players.forEach(player -> LobbyUtils.sendToLobby(plugin, player));
 
             getSpectators().forEach(this::removeSpectator);
 
@@ -414,11 +433,11 @@ public class Game {
     }
 
     public void removePlayer(Player player) {
-        new LobbyScoreboard(plugin, player).addPlayer(player);
         players.remove(player);
         kills.remove(player);
         deaths.remove(player);
-        player.teleport(LocationUtils.getSpawn(plugin));
+
+        LobbyUtils.sendToLobby(plugin, player);
 
         if(gameState == GameState.WAITING || gameState == GameState.COUNTDOWN) {
             sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas left the game! (&f"+ players.size() + "&a/&f8&a)");
