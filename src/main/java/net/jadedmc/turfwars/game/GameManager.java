@@ -103,15 +103,11 @@ public class GameManager {
      * @param game Game to delete.
      */
     public void deleteGame(Game game) {
-        String worldName = game.world().getName();
         games.remove(game);
         File worldFolder = game.world().getWorldFolder();
         Bukkit.unloadWorld(game.world(), false);
 
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            System.out.println("Deleting " + worldName);
-            FileUtils.deleteDirectory(worldFolder);
-        });
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> FileUtils.deleteDirectory(worldFolder));
     }
 
     public CompletableFuture<Game> findGame() {
