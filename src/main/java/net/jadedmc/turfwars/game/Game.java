@@ -170,19 +170,6 @@ public class Game {
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            for(Player player : getPlayers()) {
-                ChatUtils.chat(player, "&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-                ChatUtils.centeredChat(player, "&a&lReward Summary");
-                ChatUtils.chat(player, "");
-                ChatUtils.chat(player, "  &7You Earned:");
-                ChatUtils.chat(player, "    &f• &6" + 0 + " Turf Wars Coins");
-                ChatUtils.chat(player, "    &f• &b" + 0 + " Turf Wars Experience");
-                ChatUtils.chat(player, "");
-                ChatUtils.chat(player, "&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-            }
-        }, 3*20);
-
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             round = 0;
             gameCountdown = new GameCountdown(plugin, this);
 
