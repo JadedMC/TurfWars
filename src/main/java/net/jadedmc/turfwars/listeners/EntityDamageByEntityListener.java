@@ -3,6 +3,7 @@ package net.jadedmc.turfwars.listeners;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
+import net.jadedmc.turfwars.utils.chat.ChatUtils;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,6 +47,12 @@ public class EntityDamageByEntityListener implements Listener {
         }
 
         if(game.getTeam(player).equals(game.getTeam(shooter))) {
+            event.setCancelled(true);
+            return;
+        }
+
+        //
+        if(game.getTeam(player).getLines() > 14 && !game.getTeam1().isInBounds(player.getLocation()) && !game.getTeam2().isInBounds(player.getLocation())) {
             event.setCancelled(true);
             return;
         }
