@@ -182,10 +182,10 @@ public class Game {
             if(gameState == GameState.FIGHT) {
                 roundCountdown.stop();
 
-                if(round > 8 && (team1.getLines() > team2.getLines())) {
+                if(round >= 8 && (team1.getLines() > team2.getLines())) {
                     endGame(team1);
                 }
-                else if(round > 8 && (team2.getLines() > team1.getLines())) {
+                else if(round >= 8 && (team2.getLines() > team1.getLines())) {
                     endGame(team2);
                 }
                 else {
