@@ -1,6 +1,7 @@
 package net.jadedmc.turfwars.game.arena.builder;
 
 import net.jadedmc.turfwars.TurfWars;
+import net.jadedmc.turfwars.game.arena.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -27,10 +28,40 @@ public class ArenaBuilder {
     private Block team2Bounds2;
     private Location waitingArea;
     private Location spectatorSpawn;
+    private String builders;
+    private boolean editMode = false;
 
     public ArenaBuilder(TurfWars plugin, String id) {
         this.plugin = plugin;
         this.id = id;
+        builders = "JadedMC";
+    }
+
+    public ArenaBuilder(TurfWars plugin, Arena arena) {
+        this.plugin = plugin;
+        this.id = arena.id();
+        this.builders = arena.builders();
+        this.waitingArea = arena.waitingArea(Bukkit.getWorld(id));
+        this.spectatorSpawn = arena.spectatorSpawn(Bukkit.getWorld(id));
+        this.name = arena.name();
+
+        team1Bounds1 = arena.team1().bounds1(Bukkit.getWorld(id));
+        team1Bounds2 = arena.team1().bounds2(Bukkit.getWorld(id));
+        team2Bounds1 = arena.team2().bounds1(Bukkit.getWorld(id));
+        team2Bounds2 = arena.team2().bounds2(Bukkit.getWorld(id));
+
+        team1Spawns.addAll(arena.team1().spawns(Bukkit.getWorld(id)));
+        team2Spawns.addAll(arena.team2().spawns(Bukkit.getWorld(id)));
+
+        editMode = true;
+    }
+
+    /**
+     * Get if the arena builder is in edit mode.
+     * @return If in edit mode.
+     */
+    public boolean editMode() {
+        return editMode;
     }
 
     public void setName(String name) {
@@ -177,7 +208,7 @@ public class ArenaBuilder {
             plugin.arenaManager().loadArena(id);
 
             // Clears the current arena builder.
-            plugin.arenaManager().arenaBuilder(null);
+            //plugin.arenaManager().arenaBuilder(null);
         }
         catch (IOException exception) {
             exception.printStackTrace();

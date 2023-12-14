@@ -49,6 +49,7 @@ public class ArenaCMD implements CommandExecutor {
             case "setbounds2" -> setBounds2CMD(player, args);
             case "setname" -> setNameCMD(player, args);
             case "setwaitingarea" -> setWaitingAreaCMD(player);
+            case "edit" -> editCMD(player, args);
         }
 
         return true;
@@ -184,7 +185,12 @@ public class ArenaCMD implements CommandExecutor {
             File mapsFolder = new File(worldFolder.getParentFile(), "maps");
             File savedWorldFolder = new File(mapsFolder, worldID);
 
-            // Copies the world to the maps folder.
+            // Delete the old save if in edit mode.
+            if(plugin.arenaManager().arenaBuilder().editMode()) {
+                FileUtils.deleteDirectory(savedWorldFolder);
+            }
+
+            // Copies the world to the map's folder.
             FileUtils.copyFileStructure(worldFolder, savedWorldFolder);
 
             // Deletes the previous world.
@@ -317,5 +323,52 @@ public class ArenaCMD implements CommandExecutor {
         plugin.arenaManager().arenaBuilder().spectatorSpawn(player.getLocation());
         ChatUtils.chat(player, "&a&lDuels &8» &aYou have set the spectator spawn to your location.");
         ChatUtils.chat(player, "&a&lDuels &8» &aNext, add your spawns with &f/arena addspawn.");
+    }
+
+    /**
+     * Runs the /arena edit command.
+     * This command edits an existing arena.
+     * @param player Player running the command.
+     * @param args Command arguments.
+     */
+    private void editCMD(Player player, String[] args) {
+        if(plugin.arenaManager().arenaBuilder() != null) {
+            ChatUtils.chat(player, "&cError &8» &cThere is already an arena being set up.");
+            return;
+        }
+
+        // Makes sure the command is being used properly.
+        if(args.length == 1) {
+            ChatUtils.chat(player, "&cUsage &8» &c/arena edit [id]");
+            return;
+        }
+
+        // Gets the arena id.
+        String id = args[1];
+        System.out.println(id);
+
+        // Makes sure the arena exists.
+        if(plugin.arenaManager().getArena(id) == null) {
+            ChatUtils.chat(player, "&cError &8» &cThat arena does not exist!");
+            return;
+        }
+
+        Arena arena = plugin.arenaManager().getArena(id);
+        arena.arenaFile().createCopy(arena.id()).thenAccept(file -> {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                WorldCreator worldCreator = new WorldCreator(arena.id().toString());
+                worldCreator.generator(new ArenaChunkGenerator());
+                World world = Bukkit.createWorld(worldCreator);
+
+                plugin.arenaManager().arenaBuilder(new ArenaBuilder(plugin, arena));
+
+                player.setGameMode(GameMode.CREATIVE);
+                player.teleport(arena.spectatorSpawn(world));
+                player.setFlying(true);
+
+                ChatUtils.chat(player, "&a&lTurfWars &8» &aYou are now editing &f" + arena.name() + "&a.");
+                ChatUtils.chat(player, "&a&lTurfWars &8» &aWhen you are done, finish the arena with &f/arena finish&a.");
+            });
+        });
     }
 }
