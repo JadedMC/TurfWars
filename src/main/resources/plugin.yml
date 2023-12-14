@@ -1,7 +1,7 @@
 name: TurfWars
 version: '${project.version}'
 main: net.jadedmc.turfwars.TurfWars
-depend: [JadedChat, PlaceholderAPI]
+depend: [JadedChat, PlaceholderAPI, JadedPartyBukkit]
 
 commands:
   admin:
@@ -14,3 +14,5 @@ commands:
   spectate:
     description: Spectate a game.
     aliases: [spec]
+  duel:
+    description: Duel another player

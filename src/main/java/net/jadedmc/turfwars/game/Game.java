@@ -27,6 +27,8 @@ package net.jadedmc.turfwars.game;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.jadedchat.JadedChat;
+import net.jadedmc.jadedpartybukkit.JadedParty;
+import net.jadedmc.jadedpartybukkit.party.Party;
 import net.jadedmc.turfwars.game.lobby.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
@@ -89,6 +91,16 @@ public class Game {
         gameState = GameState.COUNTDOWN;
     }
 
+    public void startCountdown() {
+        if(gameState == GameState.COUNTDOWN) {
+            return;
+        }
+
+        gameCountdown.setSeconds(5);
+        gameCountdown.start();
+        gameState = GameState.COUNTDOWN;
+    }
+
     public void startGame() {
         // Create the two teams.
         team1 = new Team(arena.team1(), TeamColor.RED, world);
@@ -97,8 +109,9 @@ public class Game {
         // Randomize players and add them to teams.
         Collections.shuffle(players);
         List<List<Player>> teams = Lists.partition(players, players.size() / 2);
-        team1.addPlayers(teams.get(0));
-        team2.addPlayers(teams.get(1));
+        //team1.addPlayers(teams.get(0));
+        //team2.addPlayers(teams.get(1));
+        createTeams();
 
         team1.spawn();
         team2.spawn();
@@ -228,6 +241,90 @@ public class Game {
     }
 
     // -----------------------------------------------------------------------------------------------------
+    public void createTeams() {
+        List<Player> tempPlayers = new ArrayList<>(players);
+        Collections.shuffle(tempPlayers);
+
+        List<ArrayList<Player>> teams = new ArrayList<>();
+        List<Party> parties = new ArrayList<>();
+        List<Player> soloPlayers = new ArrayList<>();
+
+        for(int i = 0; i < 2; i++) {
+            System.out.println("Added Team: " + i);
+            teams.add(new ArrayList<>());
+        }
+
+        // Loops through all players looking for parties.
+        for(Player player : players) {
+            Party party = JadedParty.partyManager().getParty(player);
+
+            // Makes sure the player has a party.
+            if(party == null) {
+                // If they don't, add them to the solo players list.
+                soloPlayers.add(player);
+                System.out.println("Solo player added: " + player.getName());
+                continue;
+            }
+
+            // Makes sure the party isn't already listed.
+            if(parties.contains(party)) {
+                continue;
+            }
+
+            parties.add(party);
+        }
+
+        // Loop through parties to assign them to teams.
+        for(Party party : parties) {
+
+            // Finds the smallest party available to put the party.
+            List<Player> smallestTeam = teams.get(0);
+            // Loop through each team to find the smallest.
+            for(List<Player> team : teams) {
+                if(team.size() < smallestTeam.size()) {
+                    smallestTeam = team;
+                }
+            }
+
+            // Adds  all players in the party to the smallest team.
+            for(UUID member : party.getPlayers()) {
+                smallestTeam.add(Bukkit.getPlayer(member));
+            }
+        }
+
+        // Shuffle solo players.
+        Collections.shuffle(soloPlayers);
+
+        // Loop through solo players to assign them teams.
+        while(soloPlayers.size() > 0) {
+            List<Player> smallestTeam = teams.get(0);
+
+            // Loop through each team to find the smallest.
+            for(List<Player> team : teams) {
+                if(team.size() < smallestTeam.size()) {
+                    smallestTeam = team;
+                }
+            }
+
+            // Adds the player to the smallest team.
+            smallestTeam.add(soloPlayers.get(0));
+            soloPlayers.remove(soloPlayers.get(0));
+        }
+
+        // Creates the team objects.
+        int arenaTeamNumber = 0;
+        for(List<Player> teamPlayers : teams) {
+            arenaTeamNumber++;
+
+            if(arenaTeamNumber == 1) {
+                team1.addPlayers(teamPlayers);
+            }
+            else {
+                team2.addPlayers(teamPlayers);
+            }
+        }
+    }
+
     public void addBlock(Block block) {
         placedBlocks.add(block);
     }

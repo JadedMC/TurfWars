@@ -4,10 +4,8 @@ import net.jadedmc.jadedchat.JadedChat;
 import net.jadedmc.jadedchat.features.channels.channel.ChatChannel;
 import net.jadedmc.jadedchat.features.channels.channel.ChatChannelBuilder;
 import net.jadedmc.jadedchat.features.channels.fomat.ChatFormatBuilder;
-import net.jadedmc.turfwars.commands.AdminCMD;
-import net.jadedmc.turfwars.commands.ArenaCMD;
-import net.jadedmc.turfwars.commands.PlayCMD;
-import net.jadedmc.turfwars.commands.SpectateCMD;
+import net.jadedmc.turfwars.commands.*;
+import net.jadedmc.turfwars.game.DuelManager;
 import net.jadedmc.turfwars.game.GameManager;
 import net.jadedmc.turfwars.game.arena.ArenaManager;
 import net.jadedmc.turfwars.game.kit.KitManager;
@@ -23,6 +21,7 @@ public final class TurfWars extends JavaPlugin {
     private BukkitAudiences adventure;
     private SettingsManager settingsManager;
     private GameManager gameManager;
+    private DuelManager duelManager;
 
     private KitManager kitManager;
 
@@ -38,11 +37,13 @@ public final class TurfWars extends JavaPlugin {
         arenaManager.loadArenas();
         gameManager = new GameManager(this);
         kitManager = new KitManager(this);
+        duelManager = new DuelManager(this);
 
         getCommand("admin").setExecutor(new AdminCMD(this));
         getCommand("arena").setExecutor(new ArenaCMD(this));
         getCommand("play").setExecutor(new PlayCMD(this));
         getCommand("spectate").setExecutor(new SpectateCMD(this));
+        getCommand("duel").setExecutor(new DuelCMD(this));
 
         getServer().getPluginManager().registerEvents(new ChannelMessageSendListener(this), this);
         getServer().getPluginManager().registerEvents(new ChannelSwitchListener(this), this);
@@ -114,5 +115,9 @@ public final class TurfWars extends JavaPlugin {
 
     public KitManager getKitManager() {
         return kitManager;
+    }
+
+    public DuelManager duelManager() {
+        return duelManager;
     }
 }
