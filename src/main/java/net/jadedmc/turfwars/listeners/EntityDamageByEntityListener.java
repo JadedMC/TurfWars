@@ -51,11 +51,13 @@ public class EntityDamageByEntityListener implements Listener {
             return;
         }
 
-        //
+        /*
         if(game.getTeam(player).getLines() > 14 && !game.getTeam1().isInBounds(player.getLocation()) && !game.getTeam2().isInBounds(player.getLocation())) {
             event.setCancelled(true);
             return;
         }
+
+         */
 
         event.setDamage(0);
         game.playerKilled(player, shooter);

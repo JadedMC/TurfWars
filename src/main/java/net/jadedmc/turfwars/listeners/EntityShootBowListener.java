@@ -31,11 +31,14 @@ public class EntityShootBowListener implements Listener {
         }
 
         if(game.getGameState() == GameState.FIGHT) {
+            /*
             if(game.getTeam(player).getLines() > 14 && !game.getTeam1().isInBounds(player.getLocation()) && !game.getTeam2().isInBounds(player.getLocation())) {
                 ChatUtils.chat(player, "<red>You cannot shoot from your spawn right now!");
                 event.setCancelled(true);
                 return;
             }
+
+             */
 
             plugin.getKitManager().getKit(player).regenArrow(player, game);
             return;
