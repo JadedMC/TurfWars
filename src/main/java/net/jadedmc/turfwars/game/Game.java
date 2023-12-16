@@ -276,7 +276,8 @@ public class Game {
 
             players.forEach(player -> LobbyUtils.sendToLobby(plugin, player));
 
-            getSpectators().forEach(this::removeSpectator);
+            List<Player> tempSpectators = new ArrayList<>(spectators);
+            tempSpectators.forEach(this::removeSpectator);
 
             players.clear();
             kills.clear();
