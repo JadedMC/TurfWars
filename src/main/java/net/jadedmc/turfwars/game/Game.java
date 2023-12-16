@@ -39,10 +39,7 @@ import net.jadedmc.turfwars.game.team.TeamColor;
 import net.jadedmc.turfwars.utils.LocationUtils;
 import net.jadedmc.turfwars.utils.chat.ChatUtils;
 import net.jadedmc.turfwars.utils.items.ItemBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -228,6 +225,38 @@ public class Game {
             sendCenteredMessage(team2.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
         }
         */
+
+        Player mvp = winner.getPlayers().get(0);
+        for(Player player : winner.getPlayers()) {
+            if(player.equals(mvp)) {
+                continue;
+            }
+
+            int score = kills.get(player) - deaths.get(player);
+            int mvpScore = kills.get(mvp) - deaths.get(mvp);
+
+            if(score > mvpScore) {
+                mvp = player;
+            }
+        }
+
+        Team loser = getOpposingTeam(winner);
+        Player lmvp = loser.getPlayers().get(0);
+        for(Player player : loser.getPlayers()) {
+            if(player.equals(mvp)) {
+                continue;
+            }
+
+            int score = kills.get(player) - deaths.get(player);
+            int lmvpScore = kills.get(mvp) - deaths.get(lmvp);
+
+            if(score > lmvpScore) {
+                lmvp = player;
+            }
+        }
+
+        sendCenteredMessage("MVP: " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + mvp.getName() + " <dark_gray>[" + kills.get(mvp) + "-" + deaths.get(mvp) + "]");
+        sendCenteredMessage("LMVP: " + ChatUtils.replaceChatColor(loser.getTeamColor().chatColor()) + lmvp.getName() + " <dark_gray>[" + kills.get(lmvp) + "-" + deaths.get(lmvp) + "]");
 
         sendMessage("");
 
@@ -451,6 +480,15 @@ public class Game {
 
     public Team getOpposingTeam(Player player) {
         if(team1.getPlayers().contains(player)) {
+            return team2;
+        }
+        else {
+            return team1;
+        }
+    }
+
+    public Team getOpposingTeam(Team team) {
+        if(team.equals(team1)) {
             return team2;
         }
         else {
