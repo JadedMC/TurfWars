@@ -145,8 +145,8 @@ public class DuelManager {
         ChatUtils.chat(target, "");
         ChatUtils.centeredChat(target, "&f" + player.getName() + " &7wants to duel you in &f" + mapDisplayName + "&7!");
         ChatUtils.chat(target, "");
-        ChatUtils.chat(target, "  <dark_gray>» <click:suggest_command:'/duel accept " + player.getName() + "'><hover:show_text:'<green>Click to accept'><green>/duel accept " + player.getName() + "</hover></click>");
-        ChatUtils.chat(target, "  <dark_gray>» <click:suggest_command:'/duel deny " + player.getName() + "'><hover:show_text:'<red>Click to deny'><red>/duel deny " + player.getName() + "</hover></click>");
+        ChatUtils.chat(target, "  <dark_gray>» <click:run_command:'/duel accept " + player.getName() + "'><hover:show_text:'<green>Click to accept'><green>/duel accept " + player.getName() + "</hover></click>");
+        ChatUtils.chat(target, "  <dark_gray>» <click:run_command:'/duel deny " + player.getName() + "'><hover:show_text:'<red>Click to deny'><red>/duel deny " + player.getName() + "</hover></click>");
         ChatUtils.chat(target, "");
         ChatUtils.chat(target, "&a▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
     }
