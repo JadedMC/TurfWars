@@ -75,6 +75,7 @@ public class Game {
         // Set world game rules.
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             world.setGameRuleValue("doDaylightCycle", "false");
+            world.setTime(6000);
         });
     }
 
