@@ -2,6 +2,7 @@ package net.jadedmc.turfwars.game.team;
 
 import com.cryptomorin.xseries.XBlock;
 import net.jadedmc.turfwars.game.arena.ArenaTeam;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,6 +17,7 @@ import java.util.List;
 public class Team {
     private final ArenaTeam arenaTeam;
     private final List<Player> players = new ArrayList<>();
+    private final List<Player> deadPlayers = new ArrayList<>();
     private final TeamColor teamColor;
     private Block bounds1;
     private Block bounds2;
@@ -78,8 +80,19 @@ public class Team {
      * @param player Player to respawn.
      */
     public void respawn(Player player) {
+        deadPlayers.remove(player);
         player.teleport(arenaTeam.randomSpawn(world));
         player.setHealth(20);
+
+        for(Player viewer : Bukkit.getOnlinePlayers()) {
+            if(viewer.equals(player)) {
+                continue;
+            }
+
+            viewer.showPlayer(player);
+        }
+
+        player.spigot().setCollidesWithEntities(true);
     }
 
     public void decreaseBounds() {
@@ -127,6 +140,7 @@ public class Team {
      */
     public void removePlayer(Player player) {
         getPlayers().remove(player);
+        deadPlayers.remove(player);
     }
 
     public boolean isInBounds(Location location) {
@@ -136,5 +150,23 @@ public class Team {
         int maxZ = Math.max(bounds1.getZ(), bounds2.getZ());
 
         return (location.getBlockX() >= minX && location.getBlockX() <= maxX && location.getBlockZ() >= minZ && location.getBlockZ() <= maxZ);
+    }
+
+    public void killPlayer(Player player) {
+        deadPlayers.add(player);
+
+        for(Player viewer : Bukkit.getOnlinePlayers()) {
+            if(viewer.equals(player)) {
+                continue;
+            }
+
+            viewer.hidePlayer(player);
+        }
+
+        player.spigot().setCollidesWithEntities(false);
+    }
+
+    public List<Player> deadPlayers() {
+        return deadPlayers;
     }
 }

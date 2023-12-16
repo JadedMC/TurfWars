@@ -46,7 +46,9 @@ public class DuelManager {
             Arena arena = plugin.arenaManager().getArena(map);
 
             if(arena == null) {
-                return;
+                List<Arena> possibleArenas = new ArrayList<>(plugin.arenaManager().getArenas());
+                Collections.shuffle(possibleArenas);
+                arena = possibleArenas.get(0);
             }
 
             plugin.getGameManager().createGame(arena).thenAccept(game -> {
@@ -130,7 +132,7 @@ public class DuelManager {
 
         String mapDisplayName;
         switch (map) {
-            case "any" -> mapDisplayName = "Random Map";
+            case "random" -> mapDisplayName = "Random Map";
             default -> mapDisplayName = plugin.arenaManager().getArena(map).name();
         }
 

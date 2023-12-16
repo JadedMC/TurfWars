@@ -118,6 +118,7 @@ public class Game {
 
         for(Player player : players) {
             plugin.getKitManager().getKit(player).applyKit(player, this);
+            player.spigot().setCollidesWithEntities(true);
             JadedChat.setChannel(player, JadedChat.getChannel("GAME"));
             player.setGameMode(GameMode.SURVIVAL);
         }
@@ -214,6 +215,22 @@ public class Game {
 
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         sendCenteredMessage("<green><bold>Winner - " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + winner.getTeamColor().getName());
+        sendMessage("");
+        /*
+        sendCenteredMessage(team1.getTeamColor().chatColor() + "<bold>" + team1.getTeamColor().getName());
+        for(Player player : team1.getPlayers()) {
+            sendCenteredMessage(team1.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
+        }
+
+        sendMessage("");
+        sendCenteredMessage(team2.getTeamColor().chatColor() + "<bold>" + team2.getTeamColor().getName());
+        for(Player player : team2.getPlayers()) {
+            sendCenteredMessage(team2.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
+        }
+        */
+
+        sendMessage("");
+
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -355,14 +372,14 @@ public class Game {
         new GameScoreboard(plugin, player, this).addPlayer(player);
 
         // Checks if the game is at least 75% full.
-        if(players.size() >= 4 && gameCountdown.getSeconds() == 30) {
+        if(players.size() >= 4 && gameCountdown.getSeconds() == 30 && gameState == GameState.WAITING) {
             // If so, starts the countdown.
-            gameCountdown.start();
             gameState = GameState.COUNTDOWN;
+            gameCountdown.start();
         }
 
         // Checks if the game is 100% full.
-        if(players.size() >= 6 && gameCountdown.getSeconds() > 5) {
+        if(players.size() >= 6 && gameCountdown.getSeconds() > 5 && gameState == GameState.WAITING) {
             // If so, shortens the countdown to 5 seconds.
             gameCountdown.setSeconds(5);
         }
@@ -375,7 +392,6 @@ public class Game {
     public void addSpectator(Player player) {
         spectators.add(player);
 
-        player.teleport(arena.spectatorSpawn(world));
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.setAllowFlight(true);
@@ -386,6 +402,8 @@ public class Game {
         player.setGameMode(GameMode.ADVENTURE);
         new GameScoreboard(plugin, player, this).addPlayer(player);
         JadedChat.setChannel(player, JadedChat.getChannel("GAME"));
+
+        player.teleport(arena.spectatorSpawn(world));
 
         // Prevents player from interfering.
         player.spigot().setCollidesWithEntities(false);
@@ -524,8 +542,8 @@ public class Game {
         ChatUtils.chat(player, "<blue>Death> <gray>You were killed by " + ChatUtils.replaceChatColor(opposingTeam.getTeamColor().chatColor()) + killer.getName() + "<gray>.");
         ChatUtils.chat(killer, "<blue>Death> <gray>You killed " + ChatUtils.replaceChatColor(team.getTeamColor().chatColor()) + player.getName() + "<gray>.");
 
-        team.respawn(player);
-        plugin.getKitManager().getKit(player).applyKit(player, this);
+        player.getInventory().clear();
+        team.killPlayer(player);
 
         for(int i = 0; i < round; i++) {
             team.decreaseBounds();
@@ -536,6 +554,11 @@ public class Game {
                 return;
             }
         }
+
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            team.respawn(player);
+            plugin.getKitManager().getKit(player).applyKit(player, this);
+        }, 4*20);
     }
 
     public void removePlayer(Player player) {

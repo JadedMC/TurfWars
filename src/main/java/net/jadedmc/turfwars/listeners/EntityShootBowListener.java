@@ -41,6 +41,10 @@ public class EntityShootBowListener implements Listener {
              */
 
             plugin.getKitManager().getKit(player).regenArrow(player, game);
+
+            if(game.getTeam(player).deadPlayers().contains(player)) {
+                game.getTeam(player).deadPlayers().remove(player);
+            }
             return;
         }
 

@@ -59,6 +59,11 @@ public class EntityDamageByEntityListener implements Listener {
 
          */
 
+        if(game.getTeam(shooter).deadPlayers().contains(shooter)) {
+            event.setCancelled(true);
+            return;
+        }
+
         event.setDamage(0);
         game.playerKilled(player, shooter);
     }

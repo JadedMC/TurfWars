@@ -30,6 +30,26 @@ public class DuelGUI extends CustomGUI {
             setItem(i, filler);
         }
 
+        ItemStack randomMap = new ItemBuilder(Material.FIREWORK)
+                .setDisplayName("&a&lRandom Map")
+                .build();
+        setItem(31, randomMap, (p, a) -> {
+            if (target == null) {
+                ChatUtils.chat(player, "&cError &8» &cThat player is not online!");
+                player.closeInventory();
+                return;
+            }
+
+            if (plugin.getGameManager().getGame(target) != null) {
+                ChatUtils.chat(player, "&cError &8» &c/That player is currently in a game!");
+                player.closeInventory();
+                return;
+            }
+
+            plugin.duelManager().addDuelRequest(player, target, "random");
+            player.closeInventory();
+        });
+
         int slot = 9;
         for (Arena arena : plugin.arenaManager().getArenas()) {
             ItemBuilder builder = new ItemBuilder(Material.PAPER).setDisplayName("&a" + arena.name());

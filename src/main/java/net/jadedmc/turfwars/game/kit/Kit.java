@@ -1,5 +1,6 @@
 package net.jadedmc.turfwars.game.kit;
 
+import com.cryptomorin.xseries.XSound;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
@@ -71,6 +72,7 @@ public abstract class Kit {
                 player.getInventory().setItem(8, new ItemStack(Material.ARROW));
             }
             else {
+                player.playSound(player.getLocation(), XSound.BLOCK_DISPENSER_FAIL.parseSound(), 1, 1);
                 player.getInventory().addItem(new ItemStack(Material.ARROW));
             }
 
