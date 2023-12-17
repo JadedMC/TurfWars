@@ -22,38 +22,42 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-package net.jadedmc.turfwars.listeners;
+package net.jadedmc.turfwars.game.arena.file;
 
-import net.jadedmc.turfwars.TurfWars;
-import net.jadedmc.turfwars.game.lobby.LobbyUtils;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.Bukkit;
+
+import java.io.File;
 
 /**
- * This class runs a listener that is called whenever a player joins.
- * This teleports the player to spawn, reads and caches data from MySQL, and other tasks.
+ * Manages the loading of Arena world files.
  */
-public class PlayerJoinListener implements Listener {
-    private final TurfWars plugin;
+public class ArenaFileManager {
 
     /**
-     * Creates the Listener.
-     * @param plugin Instance of the plugin.
+     * Loads an Arena World File object.
+     * Returns null if invalid.
+     * @param name Name of the arena.
+     * @return ArenaFile for the arena.
      */
-    public PlayerJoinListener(TurfWars plugin) {
-        this.plugin = plugin;
-    }
+    public ArenaFile loadArenaFile(String name) {
+        File serverFolder = Bukkit.getWorlds().get(0).getWorldFolder().getParentFile();
+        File mapsFolder = new File(serverFolder, "maps");
 
-    /**
-     * Runs when the event is called.
-     * @param event PlayerJoinEvent
-     */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+        // Makes sure the map folder exists.
+        if(!mapsFolder.exists()) {
+            mapsFolder.mkdir();
+        }
 
-        LobbyUtils.sendToLobby(plugin, player);
+        File[] files = mapsFolder.listFiles();
+
+        // Loop through all world folders in the "maps" folder to look for the world.
+        for(File file : files) {
+            if(file.getName().equals(name)) {
+                // Creates the ArenaFile if it is found.
+                return new ArenaFile(file);
+            }
+        }
+
+        return null;
     }
 }

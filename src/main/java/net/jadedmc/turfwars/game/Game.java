@@ -1,21 +1,45 @@
+/*
+ * This file is part of TurfWars, licensed under the MIT License.
+ *
+ *  Copyright (c) JadedMC
+ *  Copyright (c) contributors
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 package net.jadedmc.turfwars.game;
 
-import com.cryptomorin.xseries.XMaterial;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.jadedchat.JadedChat;
-import net.jadedmc.turfwars.LobbyScoreboard;
+import net.jadedmc.jadedpartybukkit.JadedParty;
+import net.jadedmc.jadedpartybukkit.party.Party;
+import net.jadedmc.turfwars.game.lobby.LobbyScoreboard;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
 import net.jadedmc.turfwars.game.kit.Kit;
+import net.jadedmc.turfwars.game.lobby.LobbyUtils;
 import net.jadedmc.turfwars.game.team.Team;
 import net.jadedmc.turfwars.game.team.TeamColor;
 import net.jadedmc.turfwars.utils.LocationUtils;
 import net.jadedmc.turfwars.utils.chat.ChatUtils;
 import net.jadedmc.turfwars.utils.items.ItemBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,15 +60,23 @@ public class Game {
     private final Map<Player, Integer> kills = new HashMap<>();
     private final Map<Player, Integer> deaths = new HashMap<>();
     private final Set<Player> spectators = new HashSet<>();
+    private final World world;
 
-    public Game(TurfWars plugin, Arena arena) {
+    public Game(final TurfWars plugin, final Arena arena, final World world) {
         this.plugin = plugin;
         this.arena = arena;
+        this.world = world;
 
         this.gameState = GameState.WAITING;
         this.gameCountdown = new GameCountdown(plugin, this);
         round = 0;
         roundCountdown = new RoundCountdown(plugin);
+
+        // Set world game rules.
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            world.setGameRuleValue("doDaylightCycle", "false");
+            world.setTime(6000);
+        });
     }
 
     public void forceStartGame(Player player) {
@@ -57,25 +89,34 @@ public class Game {
         gameState = GameState.COUNTDOWN;
     }
 
+    public void startCountdown() {
+        if(gameState == GameState.COUNTDOWN) {
+            return;
+        }
+
+        gameCountdown.setSeconds(5);
+        gameCountdown.start();
+        gameState = GameState.COUNTDOWN;
+    }
+
     public void startGame() {
         // Create the two teams.
-        team1 = new Team(arena.getTeam1(), TeamColor.RED);
-        team2 = new Team(arena.getTeam2(), TeamColor.AQUA);
-
-        team1.updateBlocks();
-        team2.updateBlocks();
+        team1 = new Team(arena.team1(), TeamColor.RED, world);
+        team2 = new Team(arena.team2(), TeamColor.AQUA, world);
 
         // Randomize players and add them to teams.
         Collections.shuffle(players);
         List<List<Player>> teams = Lists.partition(players, players.size() / 2);
-        team1.addPlayers(teams.get(0));
-        team2.addPlayers(teams.get(1));
+        //team1.addPlayers(teams.get(0));
+        //team2.addPlayers(teams.get(1));
+        createTeams();
 
         team1.spawn();
         team2.spawn();
 
         for(Player player : players) {
             plugin.getKitManager().getKit(player).applyKit(player, this);
+            player.spigot().setCollidesWithEntities(true);
             JadedChat.setChannel(player, JadedChat.getChannel("GAME"));
             player.setGameMode(GameMode.SURVIVAL);
         }
@@ -87,7 +128,7 @@ public class Game {
         sendMessage("<white>Each <red>kill <white>advances your turf forwards.");
         sendMessage("<white>Take over <yellow>All The Turf <white>to win!");
         sendMessage("");
-        sendMessage("<green>Map - <white>" + arena.getName() + " <dark_gray>by <white>" + arena.getAuthor());
+        sendMessage("<green>Map - <white>" + arena.name() + " <dark_gray>by <white>" + arena.builders());
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
         startBuild();
@@ -152,7 +193,16 @@ public class Game {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(gameState == GameState.FIGHT) {
                 roundCountdown.stop();
-                startBuild();
+
+                if(round >= 8 && (team1.getLines() > team2.getLines())) {
+                    endGame(team1);
+                }
+                else if(round >= 8 && (team2.getLines() > team1.getLines())) {
+                    endGame(team2);
+                }
+                else {
+                    startBuild();
+                }
             }
         }, length*20);
     }
@@ -163,28 +213,59 @@ public class Game {
 
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         sendCenteredMessage("<green><bold>Winner - " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + winner.getTeamColor().getName());
-        sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+        sendMessage("");
+        /*
+        sendCenteredMessage(team1.getTeamColor().chatColor() + "<bold>" + team1.getTeamColor().getName());
+        for(Player player : team1.getPlayers()) {
+            sendCenteredMessage(team1.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
+        }
 
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            for(Player player : getPlayers()) {
-                ChatUtils.chat(player, "&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-                ChatUtils.centeredChat(player, "&a&lReward Summary");
-                ChatUtils.chat(player, "");
-                ChatUtils.chat(player, "  &7You Earned:");
-                ChatUtils.chat(player, "    &f• &6" + 0 + " Turf Wars Coins");
-                ChatUtils.chat(player, "    &f• &b" + 0 + " Turf Wars Experience");
-                ChatUtils.chat(player, "");
-                ChatUtils.chat(player, "&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+        sendMessage("");
+        sendCenteredMessage(team2.getTeamColor().chatColor() + "<bold>" + team2.getTeamColor().getName());
+        for(Player player : team2.getPlayers()) {
+            sendCenteredMessage(team2.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
+        }
+        */
+
+        Player mvp = winner.getPlayers().get(0);
+        for(Player player : winner.getPlayers()) {
+            if(player.equals(mvp)) {
+                continue;
             }
-        }, 3*20);
+
+            int score = kills.get(player) - deaths.get(player);
+            int mvpScore = kills.get(mvp) - deaths.get(mvp);
+
+            if(score > mvpScore) {
+                mvp = player;
+            }
+        }
+
+        Team loser = getOpposingTeam(winner);
+        Player lmvp = loser.getPlayers().get(0);
+        for(Player player : loser.getPlayers()) {
+            if(player.equals(mvp)) {
+                continue;
+            }
+
+            int score = kills.get(player) - deaths.get(player);
+            int lmvpScore = kills.get(lmvp) - deaths.get(lmvp);
+
+            if(score > lmvpScore) {
+                lmvp = player;
+            }
+        }
+
+        sendCenteredMessage("MVP: " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + mvp.getName() + " <dark_gray>[" + kills.get(mvp) + "-" + deaths.get(mvp) + "]");
+        sendCenteredMessage("LMVP: " + ChatUtils.replaceChatColor(loser.getTeamColor().chatColor()) + lmvp.getName() + " <dark_gray>[" + kills.get(lmvp) + "-" + deaths.get(lmvp) + "]");
+
+        sendMessage("");
+
+        sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             round = 0;
             gameCountdown = new GameCountdown(plugin, this);
-
-            arena.reset();
-            team1.updateBlocks();
-            team2.updateBlocks();
 
             for(Block block : placedBlocks) {
                 block.setType(Material.AIR);
@@ -194,25 +275,104 @@ public class Game {
             team1.getPlayers().clear();
             team2.getPlayers().clear();
 
-            for(Player player : players) {
-                plugin.getKitManager().removePlayer(player);
-                new LobbyScoreboard(plugin, player).addPlayer(player);
-                player.teleport(LocationUtils.getSpawn(plugin));
-                JadedChat.setChannel(player, JadedChat.getDefaultChannel());
-                player.setGameMode(GameMode.ADVENTURE);
-            }
+            players.forEach(player -> LobbyUtils.sendToLobby(plugin, player));
 
-            getSpectators().forEach(this::removeSpectator);
+            List<Player> tempSpectators = new ArrayList<>(spectators);
+            tempSpectators.forEach(this::removeSpectator);
 
             players.clear();
             kills.clear();
             deaths.clear();
 
-            gameState = GameState.WAITING;
+            plugin.getGameManager().deleteGame(this);
         }, 5*20);
     }
 
     // -----------------------------------------------------------------------------------------------------
+    public void createTeams() {
+        List<Player> tempPlayers = new ArrayList<>(players);
+        Collections.shuffle(tempPlayers);
+
+        List<ArrayList<Player>> teams = new ArrayList<>();
+        List<Party> parties = new ArrayList<>();
+        List<Player> soloPlayers = new ArrayList<>();
+
+        for(int i = 0; i < 2; i++) {
+            System.out.println("Added Team: " + i);
+            teams.add(new ArrayList<>());
+        }
+
+        // Loops through all players looking for parties.
+        for(Player player : players) {
+            Party party = JadedParty.partyManager().getParty(player);
+
+            // Makes sure the player has a party.
+            if(party == null) {
+                // If they don't, add them to the solo players list.
+                soloPlayers.add(player);
+                System.out.println("Solo player added: " + player.getName());
+                continue;
+            }
+
+            // Makes sure the party isn't already listed.
+            if(parties.contains(party)) {
+                continue;
+            }
+
+            parties.add(party);
+        }
+
+        // Loop through parties to assign them to teams.
+        for(Party party : parties) {
+
+            // Finds the smallest party available to put the party.
+            List<Player> smallestTeam = teams.get(0);
+            // Loop through each team to find the smallest.
+            for(List<Player> team : teams) {
+                if(team.size() < smallestTeam.size()) {
+                    smallestTeam = team;
+                }
+            }
+
+            // Adds  all players in the party to the smallest team.
+            for(UUID member : party.getPlayers()) {
+                smallestTeam.add(Bukkit.getPlayer(member));
+            }
+        }
+
+        // Shuffle solo players.
+        Collections.shuffle(soloPlayers);
+
+        // Loop through solo players to assign them teams.
+        while(soloPlayers.size() > 0) {
+            List<Player> smallestTeam = teams.get(0);
+
+            // Loop through each team to find the smallest.
+            for(List<Player> team : teams) {
+                if(team.size() < smallestTeam.size()) {
+                    smallestTeam = team;
+                }
+            }
+
+            // Adds the player to the smallest team.
+            smallestTeam.add(soloPlayers.get(0));
+            soloPlayers.remove(soloPlayers.get(0));
+        }
+
+        // Creates the team objects.
+        int arenaTeamNumber = 0;
+        for(List<Player> teamPlayers : teams) {
+            arenaTeamNumber++;
+
+            if(arenaTeamNumber == 1) {
+                team1.addPlayers(teamPlayers);
+            }
+            else {
+                team2.addPlayers(teamPlayers);
+            }
+        }
+    }
+
     public void addBlock(Block block) {
         placedBlocks.add(block);
     }
@@ -236,20 +396,21 @@ public class Game {
         player.getInventory().clear();
         player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
         player.getInventory().setItem(0, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
+        player.getInventory().setItem(8, new ItemBuilder(Material.BED).setDisplayName("&c&lLeave").build());
 
-        player.teleport(arena.getWaitingArea());
+        player.teleport(arena.waitingArea(world));
         sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas joined the game! (&f"+ players.size() + "&a/&f" + 8 + "&a)");
         new GameScoreboard(plugin, player, this).addPlayer(player);
 
         // Checks if the game is at least 75% full.
-        if(players.size() >= 4 && gameCountdown.getSeconds() == 30) {
+        if(players.size() >= 4 && gameCountdown.getSeconds() == 30 && gameState == GameState.WAITING) {
             // If so, starts the countdown.
-            gameCountdown.start();
             gameState = GameState.COUNTDOWN;
+            gameCountdown.start();
         }
 
         // Checks if the game is 100% full.
-        if(players.size() >= 6 && gameCountdown.getSeconds() > 5) {
+        if(players.size() >= 6 && gameCountdown.getSeconds() > 5 && gameState == GameState.WAITING) {
             // If so, shortens the countdown to 5 seconds.
             gameCountdown.setSeconds(5);
         }
@@ -262,7 +423,6 @@ public class Game {
     public void addSpectator(Player player) {
         spectators.add(player);
 
-        player.teleport(arena.getTeam1().getRandomSpawn());
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.setAllowFlight(true);
@@ -273,6 +433,8 @@ public class Game {
         player.setGameMode(GameMode.ADVENTURE);
         new GameScoreboard(plugin, player, this).addPlayer(player);
         JadedChat.setChannel(player, JadedChat.getChannel("GAME"));
+
+        player.teleport(arena.spectatorSpawn(world));
 
         // Prevents player from interfering.
         player.spigot().setCollidesWithEntities(false);
@@ -320,6 +482,15 @@ public class Game {
 
     public Team getOpposingTeam(Player player) {
         if(team1.getPlayers().contains(player)) {
+            return team2;
+        }
+        else {
+            return team1;
+        }
+    }
+
+    public Team getOpposingTeam(Team team) {
+        if(team.equals(team1)) {
             return team2;
         }
         else {
@@ -411,8 +582,8 @@ public class Game {
         ChatUtils.chat(player, "<blue>Death> <gray>You were killed by " + ChatUtils.replaceChatColor(opposingTeam.getTeamColor().chatColor()) + killer.getName() + "<gray>.");
         ChatUtils.chat(killer, "<blue>Death> <gray>You killed " + ChatUtils.replaceChatColor(team.getTeamColor().chatColor()) + player.getName() + "<gray>.");
 
-        team.respawn(player);
-        plugin.getKitManager().getKit(player).applyKit(player, this);
+        player.getInventory().clear();
+        team.killPlayer(player);
 
         for(int i = 0; i < round; i++) {
             team.decreaseBounds();
@@ -423,14 +594,19 @@ public class Game {
                 return;
             }
         }
+
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            team.respawn(player);
+            plugin.getKitManager().getKit(player).applyKit(player, this);
+        }, 4*20);
     }
 
     public void removePlayer(Player player) {
-        new LobbyScoreboard(plugin, player).addPlayer(player);
         players.remove(player);
         kills.remove(player);
         deaths.remove(player);
-        player.teleport(LocationUtils.getSpawn(plugin));
+
+        LobbyUtils.sendToLobby(plugin, player);
 
         if(gameState == GameState.WAITING || gameState == GameState.COUNTDOWN) {
             sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas left the game! (&f"+ players.size() + "&a/&f8&a)");
@@ -440,6 +616,12 @@ public class Game {
                 gameCountdown.cancel();
                 gameCountdown = new GameCountdown(plugin, this);
                 gameState = GameState.WAITING;
+            }
+
+            // If the game is empty, delete it.
+            if(players.size() == 0) {
+                System.out.println("0 Players detected");
+                plugin.getGameManager().deleteGame(this);
             }
         }
         else {
@@ -489,5 +671,9 @@ public class Game {
 
     public Kit getKit(Player player) {
         return plugin.getKitManager().getKit(player);
+    }
+
+    public World world() {
+        return world;
     }
 }

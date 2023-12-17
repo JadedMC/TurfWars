@@ -43,7 +43,7 @@ public class BlockPlaceListener implements Listener {
         if(game.getGameState() == GameState.BUILD || game.getGameState() == GameState.FIGHT) {
             Team team = game.getTeam(player);
 
-            if(!team.getArenaTeam().isInBounds(event.getBlock().getLocation())) {
+            if(!team.isInBounds(event.getBlock().getLocation())) {
                 ChatUtils.chat(player, "<red> You can only build on your own turf!");
             }
             else {

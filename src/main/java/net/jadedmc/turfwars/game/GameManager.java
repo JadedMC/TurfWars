@@ -1,15 +1,24 @@
 package net.jadedmc.turfwars.game;
 
+import net.jadedmc.jadedchat.utils.ChatUtils;
 import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.game.arena.Arena;
+import net.jadedmc.turfwars.game.arena.ArenaChunkGenerator;
+import net.jadedmc.turfwars.utils.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Manages all active games.
  */
 public class GameManager {
+    private final TurfWars plugin;
     private final Collection<Game> games = new HashSet<>();
 
     /**
@@ -17,9 +26,15 @@ public class GameManager {
      * @param plugin Instance of the plugin.
      */
     public GameManager(TurfWars plugin) {
-        for(Arena arena : plugin.getArenaManager().getArenas()) {
-            games.add(new Game(plugin, arena));
-        }
+        this.plugin = plugin;
+    }
+
+    /**
+     * Manually add a game. Used in duels.
+     * @param game Game to add.
+     */
+    public void addGame(Game game) {
+        games.add(game);
     }
 
     /**
@@ -27,21 +42,88 @@ public class GameManager {
      * @param player Player to add to the game.
      */
     public void addToGame(Player player) {
+
         // Remove the player from their previous game if they are in one.
         Game previous = getGame(player);
         if(previous != null) {
             previous.removePlayer(player);
         }
 
+        ChatUtils.chat(player, "&aSending you to the game...");
+
+        findGame().thenAccept(game -> {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                game.addPlayer(player);
+            });
+        });
+    }
+
+    public CompletableFuture<Game> createGame(Arena arena) {
+        UUID gameUUID = UUID.randomUUID();
+
+        // Makes a copy of the arena with the generated uuid.
+        CompletableFuture<File> arenaCopy = arena.arenaFile().createCopy(gameUUID.toString());
+
+        return arenaCopy.thenCompose(file -> CompletableFuture.supplyAsync(() -> {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                WorldCreator worldCreator = new WorldCreator(gameUUID.toString());
+                worldCreator.generator(new ArenaChunkGenerator());
+                Bukkit.createWorld(worldCreator);
+            });
+
+            // Wait for the world to be generated.
+            boolean loaded = false;
+            World world = null;
+            while(!loaded) {
+                try {
+                    Thread.sleep(60);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                for(World w : Bukkit.getWorlds()) {
+                    if(w.getName().equals(gameUUID.toString())) {
+                        loaded = true;
+                        world = w;
+                        break;
+                    }
+                }
+            }
+
+            Game game = new Game(plugin, arena, world);
+            this.addGame(game);
+
+            return game;
+        }));
+    }
+
+    /**
+     * Deletes a game that is no longer needed.
+     * This also deletes its temporary world folder.
+     * @param game Game to delete.
+     */
+    public void deleteGame(Game game) {
+        games.remove(game);
+        File worldFolder = game.world().getWorldFolder();
+        Bukkit.unloadWorld(game.world(), false);
+
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> FileUtils.deleteDirectory(worldFolder));
+    }
+
+    public CompletableFuture<Game> findGame() {
         List<Game> possibleGames = new ArrayList<>();
 
-        for(Game game : games) {
-            // Skip if the game is running.
-            if(game.getGameState() != GameState.WAITING && game.getGameState() != GameState.COUNTDOWN) {
+        for(Game possibleGame : games) {
+            // Make sure the game hasn't already started.
+            if(possibleGame.getGameState() != GameState.WAITING && possibleGame.getGameState() != GameState.COUNTDOWN) {
                 continue;
             }
 
-            possibleGames.add(game);
+            if(possibleGame.getPlayers().size() > 23) {
+                continue;
+            }
+
+            possibleGames.add(possibleGame);
         }
 
         // Shuffles list of possible games.
@@ -49,10 +131,9 @@ public class GameManager {
 
         // Returns null if no games are available.
         if(possibleGames.size() == 0) {
-            return;
+            return createGame(plugin.arenaManager().randomArena());
         }
 
-        // Checks if any of these games have players waiting.
         List<Game> possibleGamesWithPlayers = new ArrayList<>();
         for(Game game : possibleGames) {
             if(game.getPlayers().size() == 0) {
@@ -64,11 +145,11 @@ public class GameManager {
 
         // If there is a game with players waiting, return that one.
         if(!possibleGamesWithPlayers.isEmpty()) {
-            possibleGamesWithPlayers.get(0).addPlayer(player);
-            return;
+            return CompletableFuture.supplyAsync(() -> possibleGamesWithPlayers.get(0));
         }
 
-        possibleGames.get(0).addPlayer(player);
+        // Otherwise, returns the top game of the shuffled list.
+        return CompletableFuture.supplyAsync(() -> possibleGames.get(0));
     }
 
     /**

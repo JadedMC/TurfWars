@@ -1,5 +1,6 @@
-package net.jadedmc.turfwars;
+package net.jadedmc.turfwars.game.lobby;
 
+import net.jadedmc.turfwars.TurfWars;
 import net.jadedmc.turfwars.utils.DateUtils;
 import net.jadedmc.turfwars.utils.scoreboard.CustomScoreboard;
 import net.jadedmc.turfwars.utils.scoreboard.ScoreHelper;
@@ -41,12 +42,12 @@ public class LobbyScoreboard extends CustomScoreboard {
         // Gets the
 
         // Sets up the scoreboard.
-        helper.setTitle("&a&lTURF WARS");
+        helper.setTitle("&a&lTurf Wars");
         helper.setSlot(11, "&7" + DateUtils.currentDateToString());
         helper.setSlot(5, "");
         helper.setSlot(4, "&aCoins: " + "&60");
         helper.setSlot(3, "&aWins: &f0");
         helper.setSlot(2, "");
-        helper.setSlot(1, "&ajadedmc.net");
+        helper.setSlot(1, "&aplay.jadedmc.net");
     }
 }
