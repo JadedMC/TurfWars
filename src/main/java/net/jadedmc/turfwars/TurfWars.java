@@ -59,6 +59,7 @@ public final class TurfWars extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
+        getServer().getPluginManager().registerEvents(new PrepareItemCraftListener(), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(this), this);
 
         new ScoreboardUpdate(this).runTaskTimer(this, 20L, 20L);
