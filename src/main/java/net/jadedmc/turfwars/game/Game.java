@@ -249,7 +249,7 @@ public class Game {
             }
 
             int score = kills.get(player) - deaths.get(player);
-            int lmvpScore = kills.get(mvp) - deaths.get(lmvp);
+            int lmvpScore = kills.get(lmvp) - deaths.get(lmvp);
 
             if(score > lmvpScore) {
                 lmvp = player;
