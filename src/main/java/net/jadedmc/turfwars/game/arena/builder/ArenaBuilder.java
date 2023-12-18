@@ -132,12 +132,12 @@ public class ArenaBuilder {
             // TODO: Make it not the waiting area
             {
                 ConfigurationSection waitingSection = arenaSection.createSection("spectatorSpawn");
-                waitingSection.set("world", Bukkit.getWorlds().get(0).getName());
-                waitingSection.set("x", waitingArea.getX());
-                waitingSection.set("y", waitingArea.getY());
-                waitingSection.set("z", waitingArea.getZ());
-                waitingSection.set("yaw", waitingArea.getYaw());
-                waitingSection.set("pitch", waitingArea.getPitch());
+                waitingSection.set("World", Bukkit.getWorlds().get(0).getName());
+                waitingSection.set("X", waitingArea.getX());
+                waitingSection.set("Y", waitingArea.getY());
+                waitingSection.set("Z", waitingArea.getZ());
+                waitingSection.set("Yaw", waitingArea.getYaw());
+                waitingSection.set("Pitch", waitingArea.getPitch());
             }
 
             // Save Team 1
