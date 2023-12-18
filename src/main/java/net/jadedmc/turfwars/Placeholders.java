@@ -97,15 +97,15 @@ class Placeholders extends PlaceholderExpansion {
             Game game = plugin.getGameManager().getGame(player);
 
             if(game == null) {
-                return "%luckperms_prefix%&7" + player.getName();
+                return "%jadedcore_rank_chat_prefix_legacy%&7" + player.getName();
             }
 
             if(game.getGameState() == GameState.WAITING || game.getGameState() == GameState.COUNTDOWN) {
-                return "%luckperms_prefix%&7" + player.getName();
+                return "%jadedcore_rank_chat_prefix_legacy%&7" + player.getName();
             }
 
             if(game.getSpectators().contains(player)) {
-                return "<gray>[SPEC] " + player.getName();
+                return "&7[SPEC] " + player.getName();
             }
 
             Team team = game.getTeam(player);

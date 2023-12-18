@@ -399,7 +399,7 @@ public class Game {
         player.getInventory().setItem(8, new ItemBuilder(Material.BED).setDisplayName("&c&lLeave").build());
 
         player.teleport(arena.waitingArea(world));
-        sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix%") + player.getName() + " &ahas joined the game! (&f"+ players.size() + "&a/&f" + 8 + "&a)");
+        sendMessage("&f" + PlaceholderAPI.setPlaceholders(player, "%jadedcore_rank_color%") + player.getName() + " &ahas joined the game! (&f"+ players.size() + "&a/&f" + 8 + "&a)");
         new GameScoreboard(plugin, player, this).addPlayer(player);
 
         // Checks if the game is at least 75% full.
