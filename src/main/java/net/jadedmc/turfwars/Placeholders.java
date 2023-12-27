@@ -156,7 +156,7 @@ class Placeholders extends PlaceholderExpansion {
             case "team_prefix" -> {
 
                 if(game.getSpectators().contains(player)) {
-                    return "<gray>[SPEC]";
+                    return "[SPEC]";
                 }
 
                 Team team = game.getTeam(player);
