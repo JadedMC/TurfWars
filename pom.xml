@@ -112,5 +112,12 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/JadedPartyBukkit.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>net.jadedmc</groupId>
+            <artifactId>JadedCore</artifactId>
+            <version>1.0-Legacy</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/JadedCoreLegacy-1.0.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
