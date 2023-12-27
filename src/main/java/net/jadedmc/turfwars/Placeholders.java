@@ -2,6 +2,8 @@ package net.jadedmc.turfwars;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.jadedmc.jadedcore.JadedAPI;
+import net.jadedmc.jadedcore.features.player.JadedPlayer;
 import net.jadedmc.turfwars.game.Game;
 import net.jadedmc.turfwars.game.GameState;
 import net.jadedmc.turfwars.game.team.Team;
@@ -95,21 +97,22 @@ class Placeholders extends PlaceholderExpansion {
         if(identifier.equalsIgnoreCase( "game_displayname")) {
 
             Game game = plugin.getGameManager().getGame(player);
+            JadedPlayer jadedPlayer = JadedAPI.getJadedPlayer(player);
 
             if(game == null) {
-                return "%jadedcore_rank_chat_prefix_legacy%&7" + player.getName();
+                return "%jadedcore_rank_chat_prefix_legacy%&7" + jadedPlayer.getName();
             }
 
             if(game.getGameState() == GameState.WAITING || game.getGameState() == GameState.COUNTDOWN) {
-                return "%jadedcore_rank_chat_prefix_legacy%&7" + player.getName();
+                return "%jadedcore_rank_chat_prefix_legacy%&7" + jadedPlayer.getName();
             }
 
             if(game.getSpectators().contains(player)) {
-                return "&7[SPEC] " + player.getName();
+                return "&7[SPEC] " + jadedPlayer.getName();
             }
 
             Team team = game.getTeam(player);
-            return team.getTeamColor().chatColor() + player.getName() + " &8[" + game.getKills(player) + "-" + game.getDeaths(player) + "]";
+            return team.getTeamColor().chatColor() + jadedPlayer.getName() + " &8[" + game.getKills(player) + "-" + game.getDeaths(player) + "]";
         }
 
         Game game = plugin.getGameManager().getGame(player);
