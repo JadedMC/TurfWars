@@ -59,7 +59,7 @@ public class PlayerInteractListener implements Listener {
                 }
             }
 
-            case "Leave" -> {
+            case "Leave", "Leave Match" -> {
                 Game game = plugin.getGameManager().getGame(player);
 
                 if (game == null) {
@@ -70,6 +70,7 @@ public class PlayerInteractListener implements Listener {
                 player.teleport(LocationUtils.getSpawn(plugin));
                 ItemUtils.giveLobbyItems(player);
             }
+
         }
     }
 }

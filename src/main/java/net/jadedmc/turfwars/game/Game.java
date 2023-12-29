@@ -640,6 +640,11 @@ public class Game {
     }
 
     public void removePlayer(Player player) {
+        if(spectators.contains(player)) {
+            removeSpectator(player);
+            return;
+        }
+
         players.remove(player);
         kills.remove(player);
         deaths.remove(player);
