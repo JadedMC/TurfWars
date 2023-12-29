@@ -24,6 +24,7 @@
  */
 package net.jadedmc.turfwars.game;
 
+import com.cryptomorin.xseries.XSound;
 import com.google.common.collect.Lists;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.jadedmc.jadedchat.JadedChat;
@@ -149,6 +150,9 @@ public class Game {
             sendMessage("");
             sendMessage("<bold><white>" + length + " Seconds of <green>Build Time <white>has begun!");
             sendMessage("");
+
+            getPlayers().forEach(player -> player.playSound(player.getLocation(), XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), 1, 1));
+            getSpectators().forEach(player -> player.playSound(player.getLocation(), XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), 1, 1));
         }
 
         roundCountdown = new RoundCountdown(plugin);
@@ -189,6 +193,9 @@ public class Game {
         sendMessage("1 Kill = " + round + " Turf Lines");
         sendMessage("<bold><white>" + length + " Seconds of <yellow>Combat Time <white>has begun!");
         sendMessage("");
+
+        getPlayers().forEach(player -> player.playSound(player.getLocation(), XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), 1, 1));
+        getSpectators().forEach(player -> player.playSound(player.getLocation(), XSound.BLOCK_NOTE_BLOCK_PLING.parseSound(), 1, 1));
 
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(gameState == GameState.FIGHT) {
