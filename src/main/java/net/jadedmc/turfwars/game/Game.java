@@ -234,53 +234,68 @@ public class Game {
         }
         */
 
-        Player mvp = winner.getPlayers().get(0);
-        for(Player player : winner.getPlayers()) {
-            if(player.equals(mvp)) {
-                continue;
-            }
+        if(winner.getPlayers().size() > 0) {
+            Player mvp = winner.getPlayers().get(0);
+            for(Player player : winner.getPlayers()) {
+                if(player.equals(mvp)) {
+                    continue;
+                }
 
-            int score = kills.get(player) - deaths.get(player);
-            int mvpScore = kills.get(mvp) - deaths.get(mvp);
-            int mvpKills = getKills(mvp);
-            int kills = getKills(player);
+                int score = kills.get(player) - deaths.get(player);
+                int mvpScore = kills.get(mvp) - deaths.get(mvp);
+                int mvpKills = getKills(mvp);
+                int kills = getKills(player);
 
-            if(score > mvpScore) {
-                mvp = player;
-            }
-
-            if(score == mvpScore) {
-                if(kills > mvpKills) {
+                if(score > mvpScore) {
                     mvp = player;
                 }
+
+                if(score == mvpScore) {
+                    if(kills > mvpKills) {
+                        mvp = player;
+                    }
+                }
             }
+
+            sendCenteredMessage("MVP: " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + mvp.getName() + " <dark_gray>[" + kills.get(mvp) + "-" + deaths.get(mvp) + "]");
+        }
+        else {
+            sendCenteredMessage("MVP: <gray>NONE");
         }
 
         Team loser = getOpposingTeam(winner);
-        Player lmvp = loser.getPlayers().get(0);
-        for(Player player : loser.getPlayers()) {
-            if(player.equals(mvp)) {
-                continue;
-            }
 
-            int score = kills.get(player) - deaths.get(player);
-            int lmvpScore = kills.get(lmvp) - deaths.get(lmvp);
-            int lmvpKills = getKills(lmvp);
-            int kills = getKills(player);
+        if(loser.getPlayers().size() > 0) {
+            Player lmvp = loser.getPlayers().get(0);
+            for(Player player : loser.getPlayers()) {
+                if(player.equals(lmvp)) {
+                    continue;
+                }
 
-            if(score > lmvpScore) {
-                lmvp = player;
-            }
+                int score = kills.get(player) - deaths.get(player);
+                int lmvpScore = kills.get(lmvp) - deaths.get(lmvp);
+                int lmvpKills = getKills(lmvp);
+                int kills = getKills(player);
 
-            if(score == lmvpScore) {
-                if(kills > lmvpKills) {
+                if(score > lmvpScore) {
                     lmvp = player;
                 }
+
+                if(score == lmvpScore) {
+                    if(kills > lmvpKills) {
+                        lmvp = player;
+                    }
+                }
             }
+
+            sendCenteredMessage("LMVP: " + ChatUtils.replaceChatColor(loser.getTeamColor().chatColor()) + lmvp.getName() + " <dark_gray>[" + kills.get(lmvp) + "-" + deaths.get(lmvp) + "]");
+        }
+        else {
+            sendCenteredMessage("LMVP: <gray>NONE");
         }
 
-        sendCenteredMessage("MVP: " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + mvp.getName() + " <dark_gray>[" + kills.get(mvp) + "-" + deaths.get(mvp) + "]");
-        sendCenteredMessage("LMVP: " + ChatUtils.replaceChatColor(loser.getTeamColor().chatColor()) + lmvp.getName() + " <dark_gray>[" + kills.get(lmvp) + "-" + deaths.get(lmvp) + "]");
+
+
 
         sendMessage("");
 
