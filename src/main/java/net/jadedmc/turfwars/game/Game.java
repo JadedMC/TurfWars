@@ -235,9 +235,17 @@ public class Game {
 
             int score = kills.get(player) - deaths.get(player);
             int mvpScore = kills.get(mvp) - deaths.get(mvp);
+            int mvpKills = getKills(mvp);
+            int kills = getKills(player);
 
             if(score > mvpScore) {
                 mvp = player;
+            }
+
+            if(score == mvpScore) {
+                if(kills > mvpKills) {
+                    mvp = player;
+                }
             }
         }
 
@@ -250,9 +258,17 @@ public class Game {
 
             int score = kills.get(player) - deaths.get(player);
             int lmvpScore = kills.get(lmvp) - deaths.get(lmvp);
+            int lmvpKills = getKills(lmvp);
+            int kills = getKills(player);
 
             if(score > lmvpScore) {
                 lmvp = player;
+            }
+
+            if(score == lmvpScore) {
+                if(kills > lmvpKills) {
+                    lmvp = player;
+                }
             }
         }
 
