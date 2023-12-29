@@ -182,7 +182,9 @@ public class Game {
 
     public void startCombat() {
         gameState = GameState.FIGHT;
-        round++;
+        if(round > 8) {
+            round++;
+        }
 
         int length = 90;
         roundCountdown = new RoundCountdown(plugin);
@@ -200,16 +202,7 @@ public class Game {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(gameState == GameState.FIGHT) {
                 roundCountdown.stop();
-
-                if(round >= 8 && (team1.getLines() > team2.getLines())) {
-                    endGame(team1);
-                }
-                else if(round >= 8 && (team2.getLines() > team1.getLines())) {
-                    endGame(team2);
-                }
-                else {
-                    startBuild();
-                }
+                startBuild();
             }
         }, length*20);
     }
