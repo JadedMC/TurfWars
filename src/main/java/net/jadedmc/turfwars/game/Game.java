@@ -221,18 +221,6 @@ public class Game {
         sendMessage("&8▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         sendCenteredMessage("<green><bold>Winner - " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + winner.getTeamColor().getName());
         sendMessage("");
-        /*
-        sendCenteredMessage(team1.getTeamColor().chatColor() + "<bold>" + team1.getTeamColor().getName());
-        for(Player player : team1.getPlayers()) {
-            sendCenteredMessage(team1.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
-        }
-
-        sendMessage("");
-        sendCenteredMessage(team2.getTeamColor().chatColor() + "<bold>" + team2.getTeamColor().getName());
-        for(Player player : team2.getPlayers()) {
-            sendCenteredMessage(team2.getTeamColor() + player.getName() + "<dark_gray>[" + kills.get(player) + "-" + deaths.get(player) + "]");
-        }
-        */
 
         if(winner.getPlayers().size() > 0) {
             Player mvp = winner.getPlayers().get(0);
