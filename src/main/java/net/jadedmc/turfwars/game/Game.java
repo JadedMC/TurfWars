@@ -182,17 +182,20 @@ public class Game {
 
     public void startCombat() {
         gameState = GameState.FIGHT;
-        if(round > 8) {
-            round++;
-        }
+        round++;
 
         int length = 90;
         roundCountdown = new RoundCountdown(plugin);
         roundCountdown.setSeconds(length);
         roundCountdown.start();
 
+        int lines = round;
+        if(round > 8) {
+            lines = 8;
+        }
+
         sendMessage("");
-        sendMessage("1 Kill = " + round + " Turf Lines");
+        sendMessage("1 Kill = " + lines + " Turf Lines");
         sendMessage("<bold><white>" + length + " Seconds of <yellow>Combat Time <white>has begun!");
         sendMessage("");
 
@@ -202,7 +205,16 @@ public class Game {
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             if(gameState == GameState.FIGHT) {
                 roundCountdown.stop();
-                startBuild();
+
+                if(round >= 12 && (team1.getLines() > team2.getLines())) {
+                    endGame(team1);
+                }
+                else if(round >= 12 && (team2.getLines() > team1.getLines())) {
+                    endGame(team2);
+                }
+                else {
+                    startBuild();
+                }
             }
         }, length*20);
     }
@@ -604,7 +616,12 @@ public class Game {
         player.getInventory().clear();
         team.killPlayer(player);
 
-        for(int i = 0; i < round; i++) {
+        int lines = round;
+        if(round > 8) {
+            lines = 8;
+        }
+
+        for(int i = 0; i < lines; i++) {
             team.decreaseBounds();
             opposingTeam.increaseBounds();
 
