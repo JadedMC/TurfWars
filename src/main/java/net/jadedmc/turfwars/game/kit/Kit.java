@@ -70,10 +70,10 @@ public abstract class Kit {
 
             if(player.getInventory().first(Material.ARROW) < 0) {
                 player.getInventory().setItem(8, new ItemStack(Material.ARROW));
-                player.playSound(player.getLocation(), XSound.BLOCK_WOODEN_BUTTON_CLICK_ON.parseSound(), 1, 1);
+                player.playSound(player.getLocation(), XSound.BLOCK_WOODEN_BUTTON_CLICK_ON.parseSound(), 0.3f, 1f);
             }
             else {
-                player.playSound(player.getLocation(), XSound.BLOCK_WOODEN_BUTTON_CLICK_ON.parseSound(), 1, 1);
+                player.playSound(player.getLocation(), XSound.BLOCK_WOODEN_BUTTON_CLICK_ON.parseSound(), 0.3f, 1f);
                 player.getInventory().addItem(new ItemStack(Material.ARROW));
             }
 
