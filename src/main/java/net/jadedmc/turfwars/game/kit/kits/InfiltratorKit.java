@@ -45,7 +45,7 @@ public class InfiltratorKit extends Kit {
         ItemBuilder wool = new ItemBuilder(Material.WOOL, 8).dye(game.getTeam(player).getTeamColor().blockColor());
         player.getInventory().setItem(2, wool.build());
 
-        player.getInventory().setItem(8, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
+        //player.getInventory().setItem(8, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
     }
 
     public void processSlowness(TurfWars plugin, Player player, Game game) {

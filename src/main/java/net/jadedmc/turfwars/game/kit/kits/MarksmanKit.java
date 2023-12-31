@@ -32,6 +32,6 @@ public class MarksmanKit extends Kit {
         ItemBuilder wool = new ItemBuilder(Material.WOOL, 8).dye(game.getTeam(player).getTeamColor().blockColor());
         player.getInventory().setItem(1, wool.build());
 
-        player.getInventory().setItem(8, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
+        //player.getInventory().setItem(8, new ItemBuilder(Material.NETHER_STAR).setDisplayName("&aKit Selector").build());
     }
 }
