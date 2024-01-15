@@ -111,8 +111,21 @@ class Placeholders extends PlaceholderExpansion {
                 return "&7[SPEC] " + jadedPlayer.getName();
             }
 
+            int lines = game.getLines(player);
+            String lineMessage = "";
+
+            if(lines > 0) {
+                lineMessage = "&a(+" + lines + ")";
+            }
+            else if(lines < 0) {
+                lineMessage = "&c(" + lines + ")";
+            }
+            else {
+                lineMessage = "&7(0)";
+            }
+
             Team team = game.getTeam(player);
-            return team.getTeamColor().chatColor() + jadedPlayer.getName() + " &8[" + game.getKills(player) + "-" + game.getDeaths(player) + "]";
+            return team.getTeamColor().chatColor() + jadedPlayer.getName() + " &8[" + game.getKills(player) + "-" + game.getDeaths(player) + "] " + lineMessage;
         }
 
         Game game = plugin.getGameManager().getGame(player);

@@ -60,6 +60,7 @@ public class Game {
     private final Collection<Block> placedBlocks = new HashSet<>();
     private final Map<Player, Integer> kills = new HashMap<>();
     private final Map<Player, Integer> deaths = new HashMap<>();
+    private final Map<Player, Integer> lines = new HashMap<>();
     private final Set<Player> spectators = new HashSet<>();
     private final World world;
 
@@ -250,7 +251,18 @@ public class Game {
                 }
             }
 
-            sendCenteredMessage("MVP: " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + mvp.getName() + " <dark_gray>[" + kills.get(mvp) + "-" + deaths.get(mvp) + "]");
+            String linesMessage = "";
+            if(lines.get(mvp) > 0) {
+                linesMessage = "<green>(+" + lines.get(mvp) +")";
+            }
+            else if(lines.get(mvp) < 0) {
+                linesMessage = "<red>(" + lines.get(mvp) +")";
+            }
+            else {
+                linesMessage = "<gray>(0)";
+            }
+
+            sendCenteredMessage("MVP: " + ChatUtils.replaceChatColor(winner.getTeamColor().chatColor()) + mvp.getName() + " <dark_gray>[" + kills.get(mvp) + "-" + deaths.get(mvp) + "] " + linesMessage);
         }
         else {
             sendCenteredMessage("MVP: <gray>NONE");
@@ -281,7 +293,18 @@ public class Game {
                 }
             }
 
-            sendCenteredMessage("LMVP: " + ChatUtils.replaceChatColor(loser.getTeamColor().chatColor()) + lmvp.getName() + " <dark_gray>[" + kills.get(lmvp) + "-" + deaths.get(lmvp) + "]");
+            String linesMessage = "";
+            if(lines.get(lmvp) > 0) {
+                linesMessage = "<green>(+" + lines.get(lmvp) +")";
+            }
+            else if(lines.get(lmvp) < 0) {
+                linesMessage = "<red>(" + lines.get(lmvp) +")";
+            }
+            else {
+                linesMessage = "<gray>(0)";
+            }
+
+            sendCenteredMessage("LMVP: " + ChatUtils.replaceChatColor(loser.getTeamColor().chatColor()) + lmvp.getName() + " <dark_gray>[" + kills.get(lmvp) + "-" + deaths.get(lmvp) + "] " + linesMessage);
         }
         else {
             sendCenteredMessage("LMVP: <gray>NONE");
@@ -416,11 +439,16 @@ public class Game {
         kills.put(player, kills.get(player) + 1);
     }
 
+    public void addLines(Player player, int linesCount) {
+        lines.put(player, lines.get(player) + linesCount);
+    }
+
     public void addPlayer(Player player) {
         // If not, just adds themselves.
         players.add(player);
         kills.put(player, 0);
         deaths.put(player, 0);
+        lines.put(player, 0);
 
         plugin.getKitManager().addPlayer(player, plugin.getKitManager().getKit("marksman"));
 
@@ -497,6 +525,10 @@ public class Game {
 
     public GameState getGameState() {
         return gameState;
+    }
+
+    public int getLines(Player player) {
+        return lines.get(player);
     }
 
     public List<Player> getPlayers() {
@@ -621,6 +653,9 @@ public class Game {
             lines = 8;
         }
 
+        addLines(killer, lines);
+        addLines(player, -lines);
+
         for(int i = 0; i < lines; i++) {
             team.decreaseBounds();
             opposingTeam.increaseBounds();
@@ -646,6 +681,7 @@ public class Game {
         players.remove(player);
         kills.remove(player);
         deaths.remove(player);
+        lines.remove(player);
 
         LobbyUtils.sendToLobby(plugin, player);
 
